@@ -1,0 +1,5 @@
+orlikclient/__pycache__
+orlikproject/__pycache__
+orlikclient/migrations/__pycache__
+.idea
+venv
