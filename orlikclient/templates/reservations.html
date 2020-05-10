@@ -1,0 +1,25 @@
+{% extends "home.html" %}
+{% block content %}
+    {% for reservation in user_reservations %}
+        <article class="p-3">
+            <div class="card">
+                <h3 class="card-header font-weight-bold">
+                    {{ reservation.pitch_name }}
+                </h3>
+                <div class="card-body">
+                    <p class="card-text">
+                        {{ reservation.date }}
+                    </p>
+                    <p class="card-text">
+                        {{ reservation.start_hour }} - {{ reservation.start_hour }}
+                    </p>
+                </div>
+                <div class="card-footer text-center">
+                    <a class="btn btn-danger center" href="#">
+                        Cancel reservation
+                    </a>
+                </div>
+            </div>
+        </article>
+    {% endfor %}
+{% endblock content %}

@@ -14,19 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from orlikclient.views import \
-    register_view, \
-    register_success, \
-    register_user, \
-    register_failure ,\
-    system_failure
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('register/', register_view),
-    path('addUser/', register_user),
-    path('registerSuccess/', register_success),
-    path('registerFailure/', register_failure),
-    path('systemFailure/', system_failure)
+    path('', include('orlikclient.urls')),
 ]
