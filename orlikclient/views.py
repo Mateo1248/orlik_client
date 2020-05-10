@@ -5,8 +5,8 @@ import requests
 import json
 
 BASE_ENDPOINT = 'http://localhost:5000'
-REGISTER_USER_ENDPOINT = BASE_ENDPOINT + '/users'
-USER_RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
+REGISTER_ENDPOINT = BASE_ENDPOINT + '/users'
+RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
 
 user_reservations = [
     {
@@ -42,13 +42,13 @@ def system_failure(request):
     return render(request, 'systemFailure.html')
 
 
-def reservations(request):
+def list_user_reservations(request):
     context = {
         'user_reservations': user_reservations
     }
     headers = {'Content-type': 'application/json'}
     reservation_list = []
-    response = requests.get(USER_RESERVATIONS_ENDPOINT + 'pilkarz1@gmail.com', headers=headers)
+    response = requests.get(RESERVATIONS_ENDPOINT + 'pilkarz1@gmail.com', headers=headers)
     print(response)
     #TODO to be changeed after implementing signing in
     if response.status_code == 200:
@@ -63,7 +63,11 @@ def reservations(request):
                     pitch_name=reservation['pitchName'],
                 )
             )
-    return render(request, 'reservations.html', context)
+    return render(request, 'listUserReservations.html', context)
+
+
+def make_reservation(request):
+    return render(request, 'makeReservation.html')
 
 
 def register_user(request):
@@ -73,7 +77,7 @@ def register_user(request):
         'userPassword': register_data.password
     }
     headers = {'Content-type': 'application/json'}
-    response = requests.post(REGISTER_USER_ENDPOINT, data=json.dumps(register_data_dto), headers=headers)
+    response = requests.post(REGISTER_ENDPOINT, data=json.dumps(register_data_dto), headers=headers)
     status_code = response.status_code
     if status_code == 201:
         return redirect('/home/')
