@@ -1,0 +1,63 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.hero{
+    height: 100%;
+    width: 100%;
+    background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("../jpegs/stadium.jpg");
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+}
+
+.form-box{
+    width: 40%;
+    height: 40%;
+    position: relative;
+    margin: 6% auto;
+    background: #fff;
+    padding: 1%;
+    border-radius: 5px;
+    background-color: #e6fff7;
+}
+
+.texter{
+    width: 100%;
+    text-align: center;
+    font-size: larger;
+    margin-top: 2%;
+    margin-bottom: 5%;
+}
+
+.one-form{
+    height: 70%;
+    width: 48%;
+    margin: 2% 1%;
+    display: block;
+    float: left;
+}
+
+.form-elem{
+    width: 80%;
+    height: 15%;
+    border-radius: 10px;
+    margin: 5% auto;
+    text-align: left;
+}
+
+.form-btn{
+    width: 75%;
+    border-radius: 30px;
+    border-color: black;
+    height: 20%;
+    margin: 5% auto;
+    text-align: center;
+    font-size: larger;
+    background-color: #66d9ff;
+}
+
+.form-btn:hover{
+    background-color: #33ccff;
+}

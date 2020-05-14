@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import RegisterData, Reservation
+from django.template import RequestContext
+
+from .models import RegisterData, Reservation, LoginData
 import requests
 import json
 
 BASE_ENDPOINT = 'http://localhost:5000'
 REGISTER_ENDPOINT = BASE_ENDPOINT + '/users'
+LOGIN_ENDPOINT = BASE_ENDPOINT + '/login'
 RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
+
+token = 'token'
 
 user_reservations = [
     {
@@ -26,8 +31,8 @@ user_reservations = [
 ]
 
 
-def register_view(request):
-    return render(request, 'register.html')
+def register_or_login_view(request):
+    return render(request, 'start.html')
 
 
 def home(request):
@@ -36,6 +41,10 @@ def home(request):
 
 def register_failure(request):
     return render(request, 'registerFailure.html')
+
+
+def login_failure(request):
+    return render(request, 'loginFailure.html')
 
 
 def system_failure(request):
@@ -84,5 +93,25 @@ def register_user(request):
     elif 400 <= status_code < 500:
         print(status_code)
         return redirect('/registerFailure/')
+    else:
+        return redirect('/systemFailure/')
+
+
+def login_user(request):
+    global token
+    login_data = LoginData(email=request.POST['email'], password=request.POST['password'])
+    login_data_dto = {
+        'userLogin': login_data.email,
+        'userPassword': login_data.password
+    }
+    headers = {'Content-type': 'application/json'}
+    response = requests.post(LOGIN_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
+    status_code = response.status_code
+    token = response.headers.get('Authorization')
+    if status_code == 200:
+        return redirect('/home/')
+    elif 400 <= status_code < 500:
+        print(status_code)
+        return redirect('/loginFailure/')
     else:
         return redirect('/systemFailure/')
