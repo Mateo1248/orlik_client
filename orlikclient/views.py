@@ -7,6 +7,7 @@ import json
 BASE_ENDPOINT = 'http://localhost:5000'
 REGISTER_USER_ENDPOINT = BASE_ENDPOINT + '/users'
 USER_RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
+USER_ACCOUNT_ENDPOINT = BASE_ENDPOINT + '/account'
 
 user_reservations = [
     {
@@ -23,7 +24,7 @@ user_reservations = [
         'pitch_name': 'Orlik Dembowskiego',
         'reservation_id': '2'
     }
-]
+]    
 
 
 def register_view(request):
@@ -82,3 +83,32 @@ def register_user(request):
         return redirect('/registerFailure/')
     else:
         return redirect('/systemFailure/')
+
+
+def account(request):
+    #get account details
+    user_email = ''
+    user_password = ''
+    
+    print(request)
+
+    return render(request, 
+        'account.html',
+        {
+            'title' : 'Your account',
+            'email' : user_email,
+            'password' : user_password
+        }
+        )
+
+
+def account_delete(request):
+    #TO DO
+    #delete account and go home
+    return render(request, 'home.html')
+
+
+def account_change_passwd(request):
+    #TO DO
+    #display window with change password
+    return account(request)
