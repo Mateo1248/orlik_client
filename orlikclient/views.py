@@ -7,7 +7,10 @@ import json
 BASE_ENDPOINT = 'http://localhost:5000'
 REGISTER_USER_ENDPOINT = BASE_ENDPOINT + '/users'
 USER_RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
-USER_ACCOUNT_ENDPOINT = BASE_ENDPOINT + '/account'
+
+DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/' #Delete
+CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT #Patch
+USER_DATA_ENDPOINT = BASE_ENDPOINT + ''
 
 user_reservations = [
     {
@@ -89,16 +92,12 @@ def account(request):
     user_email = 'test_email@test.com'
     user_password = 'test_password'
 
-    #TO DO
-    #get account details
-
     if "show_password" not in request.GET:
-            user_password = "".join(["*" for _ in range(len(user_password))])
+        user_password = "".join(["*" for _ in range(len(user_password))])
 
     return render(request, 
         'account.html',
         {
-            'section_title' : 'Your account',
             'user_email' : user_email,
             'user_password' : user_password
         }
@@ -106,8 +105,9 @@ def account(request):
 
 
 def account_delete(request):
-    #TO DO
-    #delete account and go home
+    headers = {'Content-type': 'application/json'}
+    response = requests.get(USER_DATA_ENDPOINT + user_email, headers=headers)
+    print(response)
     return render(request, 'register.html')
 
 
