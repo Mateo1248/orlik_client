@@ -1,0 +1,120 @@
+#Rejestracja użytkownika
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+  "userLogin": "admin@admin.com",
+  "userPassword": "admin"
+}
+
+###
+
+#Logowanie
+POST  http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "userLogin": "admin@admin.com",
+  "userPassword": "admin"
+}
+
+###
+
+#Usuwanie użytkownika
+DELETE http://localhost:5000/{userLogin}
+Authorization: Bearer {TOKEN}
+
+###
+
+#Sprawdzanie, czy użytkownik istnieje
+GET http://localhost:5000/{userLogin}
+Authorization: Bearer {TOKEN}
+
+###
+
+#Zmiana hasła użytkownika
+PATCH http://localhost:5000
+Content-Type: application/json
+Authorization: Bearer {TOKEN}
+
+{
+  "userLogin": "admin@admin.com",
+  "userPassword": "admin"
+}
+
+###
+
+#Rezerwacja orlika
+POST http://localhost:5000/reservations
+Content-Type: application/json
+Authorization: Bearer {TOKEN}
+
+{
+  "reservationDate": "2020-06-29",
+  "startHour": "10:00",
+  "endHour": "10:00",
+  "whichUser": "admin@admin.com",
+  "whichPitch": 1
+}
+
+###
+
+#Pobieranie harmonogramu orlika na dany dzień
+GET http://localhost:5000/reservations?whichPitch=1&reservationDate=2020-06-29
+Authorization: Bearer {TOKEN}
+
+###
+
+#Pobieranie rezerwacji danego użytkownika
+GET http://localhost:5000/reservations/users/admin@admin.com
+Authorization: Bearer {TOKEN}
+
+###
+
+#Anulowanie rezerwacji
+DELETE http://localhost:5000/reservations/{reservationId}
+Authorization: Bearer {TOKEN}
+
+###
+
+#Ocenienie orlika
+POST http://localhost:5000/ratings
+Content-Type: application/json
+Authorization: Bearer {TOKEN}
+
+{
+  "pitchId": 1,
+  "userId": "admin@admin.com",
+  "value": 4
+}
+
+###
+
+#Pobranie średniej ocen orlika
+GET http://localhost:5000/ratings?pitchId=1
+Authorization: Bearer {TOKEN}
+
+###
+
+#Dodanie orlika
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer {TOKEN}
+
+{
+  "pitchName": "Orlik dla samych kozaków",
+  "latitude": 51.0,
+  "longitude": 17.0
+}
+
+###
+
+#Pobieranie wszystkich orlików
+GET http://localhost:5000/pitches
+Authorization: Bearer {TOKEN}
+
+###
+
+#Znajdowanie najbliższego orlika
+GET http://localhost:5000/pitches/nearest/{latitude}/{longitude}
+Authorization: Bearer {TOKEN}
