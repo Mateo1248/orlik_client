@@ -10,14 +10,14 @@ BASE_ENDPOINT = 'http://localhost:5000'
 REGISTER_ENDPOINT = BASE_ENDPOINT + '/users'
 LOGIN_ENDPOINT = BASE_ENDPOINT + '/login'
 RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
+DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/' 
+CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT 
 
 token = 'token'
-
-DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/' #Delete
-CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT #Patch
-
-token = 'token'
-user = {}
+user = {
+    'userLogin': 'test@test.com',
+    'userPassword': 'testpassword'
+}
 
 user_reservations = [
     {
@@ -105,14 +105,14 @@ def register_user(request):
 
 def account(request):
     context = {
-        'userLogin': 'test@test.com',
-        'userPassword': 'password'
+        'userLogin': user['userLogin'],
+        'userPassword': user['userPassword']
     }
 
     if "show_password" not in request.GET:
-        user_password = "".join(["*" for _ in range(len(user_password))])
+        context['userPassword'] = "".join(["*" for _ in range(len(context['userPassword']))])
 
-    return render(request, 'account.html', context )
+    return render(request, 'account.html', context)
 
 
 def account_delete(request):
@@ -125,6 +125,8 @@ def account_delete(request):
 
     if response.status_code == 200:
         print("@@@@ usunięto")
+    else:
+        return redirect('/systemFailure/')
 
     return render(request, 'register.html')
 
@@ -140,26 +142,33 @@ def account_change_passwd(request):
         'userPassword': request.POST['password']
     }
 
-    response = requests.patch(DELETE_USER_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
+    response = requests.patch(CHANGE_PASSWORD_ENDPOINT, data=json.dumps(new_user_dto), headers=headers)
 
     if response.status_code == 200:
         print("@@@@ zmieniono")
+        user = new_user_dto
+    else:
+        return redirect('/systemFailure/')
 
     return account(request)
 
 
 def login_user(request):
     global token
+    global user
+
     login_data = LoginData(email=request.POST['email'], password=request.POST['password'])
     login_data_dto = {
         'userLogin': login_data.email,
         'userPassword': login_data.password
     }
+
     headers = {'Content-type': 'application/json'}
     response = requests.post(LOGIN_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
     status_code = response.status_code
     token = response.headers.get('Authorization')
     if status_code == 200:
+        user = login_data_dto
         return redirect('/home/')
     elif 400 <= status_code < 500:
         print(status_code)
