@@ -86,18 +86,21 @@ def register_user(request):
 
 
 def account(request):
+    user_email = 'test_email@test.com'
+    user_password = 'test_password'
+
+    #TO DO
     #get account details
-    user_email = ''
-    user_password = ''
-    
-    print(request)
+
+    if "show_password" not in request.GET:
+            user_password = "".join(["*" for _ in range(len(user_password))])
 
     return render(request, 
         'account.html',
         {
-            'title' : 'Your account',
-            'email' : user_email,
-            'password' : user_password
+            'section_title' : 'Your account',
+            'user_email' : user_email,
+            'user_password' : user_password
         }
         )
 
@@ -105,7 +108,7 @@ def account(request):
 def account_delete(request):
     #TO DO
     #delete account and go home
-    return render(request, 'home.html')
+    return render(request, 'register.html')
 
 
 def account_change_passwd(request):

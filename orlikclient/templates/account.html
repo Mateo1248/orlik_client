@@ -2,7 +2,7 @@
 
 <div class="content-section">
     <h1 style="min-height:2.5em; padding:1.25em;text-align: center;">{{title}}</h1>
-    <form action="/account" method="GET">
+    <form action="/account/" method="GET">
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Account details</legend>
@@ -11,21 +11,16 @@
         <div class="form-group">
             <ul>
                 <li style="min-height: 3em;">
-                    <div class="container h-100">
-                        <div class="d-flex h-100">
-                            <div class="align-self-start">
-                                email: {{user_email}}
-                            </div>
-                        </div>
-                    </div>
+
+                    email: {{user_email}}
+
                 </li>
                 <li style="min-height: 3em;">
 
+                    password: {{user_password}}
+
                     <div class="container h-100">
                         <div class="d-flex h-100">
-                            <div class="align-self-start">
-                                password: {{user_password}}
-                            </div>
                             <div class="align-self-center mx-auto">
                                 <button class="btn btn-outline-info btn-sm" name="show_password" type="submit">Show password</button>
                             </div>
@@ -35,7 +30,7 @@
             </ul>
         </div>
     </form>
-    <form action="/account/reset" method="POST">
+    <form action="/account/reset/" method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Reset Password</legend>
@@ -45,7 +40,7 @@
             <button class="btn btn-outline-danger" name="reset_password" type="submit">Reset Password</button>
         </div>
     </form>
-    <form action="/account/delete" method="POST">
+    <form action="/account/delete/" method="DELETE">
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Delete account</legend>
