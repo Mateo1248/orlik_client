@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import RegisterData, Reservation
+from django.template import RequestContext
+
+from .models import RegisterData, Reservation, LoginData
 import requests
 import json
 
 BASE_ENDPOINT = 'http://localhost:5000'
-REGISTER_USER_ENDPOINT = BASE_ENDPOINT + '/users'
-USER_RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
+REGISTER_ENDPOINT = BASE_ENDPOINT + '/users'
+LOGIN_ENDPOINT = BASE_ENDPOINT + '/login'
+RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
+
+token = 'token'
 
 DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/' #Delete
 CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT #Patch
@@ -32,8 +37,8 @@ user_reservations = [
 ]    
 
 
-def register_view(request):
-    return render(request, 'register.html')
+def register_or_login_view(request):
+    return render(request, 'start.html')
 
 
 def home(request):
@@ -44,17 +49,21 @@ def register_failure(request):
     return render(request, 'registerFailure.html')
 
 
+def login_failure(request):
+    return render(request, 'loginFailure.html')
+
+
 def system_failure(request):
     return render(request, 'systemFailure.html')
 
 
-def reservations(request):
+def list_user_reservations(request):
     context = {
         'user_reservations': user_reservations
     }
     headers = {'Content-type': 'application/json'}
     reservation_list = []
-    response = requests.get(USER_RESERVATIONS_ENDPOINT + 'pilkarz1@gmail.com', headers=headers)
+    response = requests.get(RESERVATIONS_ENDPOINT + 'pilkarz1@gmail.com', headers=headers)
     print(response)
     #TODO to be changeed after implementing signing in
     if response.status_code == 200:
@@ -69,7 +78,11 @@ def reservations(request):
                     pitch_name=reservation['pitchName'],
                 )
             )
-    return render(request, 'reservations.html', context)
+    return render(request, 'listUserReservations.html', context)
+
+
+def make_reservation(request):
+    return render(request, 'makeReservation.html')
 
 
 def register_user(request):
@@ -79,7 +92,7 @@ def register_user(request):
         'userPassword': register_data.password
     }
     headers = {'Content-type': 'application/json'}
-    response = requests.post(REGISTER_USER_ENDPOINT, data=json.dumps(register_data_dto), headers=headers)
+    response = requests.post(REGISTER_ENDPOINT, data=json.dumps(register_data_dto), headers=headers)
     status_code = response.status_code
     if status_code == 201:
         return redirect('/home/')
@@ -133,3 +146,23 @@ def account_change_passwd(request):
         print("@@@@ zmieniono")
 
     return account(request)
+
+
+def login_user(request):
+    global token
+    login_data = LoginData(email=request.POST['email'], password=request.POST['password'])
+    login_data_dto = {
+        'userLogin': login_data.email,
+        'userPassword': login_data.password
+    }
+    headers = {'Content-type': 'application/json'}
+    response = requests.post(LOGIN_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
+    status_code = response.status_code
+    token = response.headers.get('Authorization')
+    if status_code == 200:
+        return redirect('/home/')
+    elif 400 <= status_code < 500:
+        print(status_code)
+        return redirect('/loginFailure/')
+    else:
+        return redirect('/systemFailure/')
