@@ -10,7 +10,9 @@ USER_RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
 
 DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/' #Delete
 CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT #Patch
-USER_DATA_ENDPOINT = BASE_ENDPOINT + ''
+
+token = 'token'
+user = {}
 
 user_reservations = [
     {
@@ -89,29 +91,45 @@ def register_user(request):
 
 
 def account(request):
-    user_email = 'test_email@test.com'
-    user_password = 'test_password'
+    context = {
+        'userLogin': 'test@test.com',
+        'userPassword': 'password'
+    }
 
     if "show_password" not in request.GET:
         user_password = "".join(["*" for _ in range(len(user_password))])
 
-    return render(request, 
-        'account.html',
-        {
-            'user_email' : user_email,
-            'user_password' : user_password
-        }
-        )
+    return render(request, 'account.html', context )
 
 
 def account_delete(request):
-    headers = {'Content-type': 'application/json'}
-    response = requests.get(USER_DATA_ENDPOINT + user_email, headers=headers)
-    print(response)
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': 'token {}'.format(token)
+    }
+
+    response = requests.delete(DELETE_USER_ENDPOINT + user['email'], headers=headers)
+
+    if response.status_code == 200:
+        print("@@@@ usunięto")
+
     return render(request, 'register.html')
 
 
 def account_change_passwd(request):
-    #TO DO
-    #display window with change password
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': 'token {}'.format(token)
+    }
+
+    new_user_dto = {
+        'userLogin': user['login'],
+        'userPassword': request.POST['password']
+    }
+
+    response = requests.patch(DELETE_USER_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
+
+    if response.status_code == 200:
+        print("@@@@ zmieniono")
+
     return account(request)

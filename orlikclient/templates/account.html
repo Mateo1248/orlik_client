@@ -12,12 +12,12 @@
             <ul>
                 <li style="min-height: 3em;">
 
-                    email: {{user_email}}
+                    email: {{userLogin}}
 
                 </li>
                 <li style="min-height: 3em;">
 
-                    password: {{user_password}}
+                    password: {{userPassword}}
 
                     <div class="container h-100">
                         <div class="d-flex h-100">
@@ -40,7 +40,7 @@
             <button class="btn btn-outline-danger" name="reset_password" type="submit">Reset Password</button>
         </div>
     </form>
-    <form action="/account/delete/" method="DELETE">
+    <form action="/account/delete/" method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Delete account</legend>
