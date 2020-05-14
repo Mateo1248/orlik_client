@@ -13,6 +13,12 @@ RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
 
 token = 'token'
 
+DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/' #Delete
+CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT #Patch
+
+token = 'token'
+user = {}
+
 user_reservations = [
     {
         'date': '2020-05-20',
@@ -28,7 +34,7 @@ user_reservations = [
         'pitch_name': 'Orlik Dembowskiego',
         'reservation_id': '2'
     }
-]
+]    
 
 
 def register_or_login_view(request):
@@ -95,6 +101,51 @@ def register_user(request):
         return redirect('/registerFailure/')
     else:
         return redirect('/systemFailure/')
+
+
+def account(request):
+    context = {
+        'userLogin': 'test@test.com',
+        'userPassword': 'password'
+    }
+
+    if "show_password" not in request.GET:
+        user_password = "".join(["*" for _ in range(len(user_password))])
+
+    return render(request, 'account.html', context )
+
+
+def account_delete(request):
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': 'token {}'.format(token)
+    }
+
+    response = requests.delete(DELETE_USER_ENDPOINT + user['email'], headers=headers)
+
+    if response.status_code == 200:
+        print("@@@@ usunięto")
+
+    return render(request, 'register.html')
+
+
+def account_change_passwd(request):
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': 'token {}'.format(token)
+    }
+
+    new_user_dto = {
+        'userLogin': user['login'],
+        'userPassword': request.POST['password']
+    }
+
+    response = requests.patch(DELETE_USER_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
+
+    if response.status_code == 200:
+        print("@@@@ zmieniono")
+
+    return account(request)
 
 
 def login_user(request):
