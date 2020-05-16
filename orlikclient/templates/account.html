@@ -30,25 +30,66 @@
             </ul>
         </div>
     </form>
-    <form action="/account/reset/" method="POST">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Reset Password</legend>
-            {{ form }}
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-danger" name="reset_password" type="submit">Reset Password</button>
+
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Change Password</legend>
+        {{ form }}
+    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-outline-danger" name="reset_password" type="submit" onclick="display_change()">Reset Password</button>
+    </div>
+
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Delete account</legend>
+        {{ form }}
+    </fieldset>
+    <div class="form-group">
+        <button id="delete" class="btn btn-outline-danger" name="delete_account" type="submit" onclick="display_delete()">Delete account</button>
+    </div>
+
+    <div>
+        <div id="change" class="alert alert-danger" style="display:none; text-align:center;">
+            <form action='/account/change/' method="POST">
+                {% csrf_token %}
+                <h4>Reset password.</h4>
+                <div class="container h-100">
+                    <div class="d-flex h-100">
+                        <div class="align-self-center mx-auto">
+                            <label for="pwd">Please enter new password:</label>
+                            <input name="new_password" type="password" class="form-control " id="pwd">
+                        </div>
+                        <div class="align-self-center mx-auto">
+                            <input class="btn btn-danger" type="submit" value="Confirm" />
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
-    <form action="/account/delete/" method="POST">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Delete account</legend>
-            {{ form }}
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-danger" name="delete_account" type="submit">Delete account</button>
+        <div id="del_confirm" class="alert alert-danger" style="display:none; text-align:center;">
+            <form action='/account/delete/' method="POST">
+                {% csrf_token %}
+                <h4>Delete account.</h4>
+                <p> Are you sure?</p>
+                <input class="btn btn-link" type="button" value="Cancel" onclick="hide_all()" />
+                <input class="btn btn-danger" type="submit" value="Confirm" />
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+<script>
+    function hide_all() {
+        $('#del_confirm').css('display', 'none')
+        $('#change').css('display', 'none')
+    }
+
+    function display_delete() {
+        hide_all()
+        $('#del_confirm').css('display', 'block')
+    }
+
+    function display_change() {
+        hide_all()
+        $('#change').css('display', 'block')
+    }
+</script>
 {% endblock content %}
