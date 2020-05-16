@@ -108,9 +108,6 @@ def account(request):
         'userPassword': user['userPassword']
     }
 
-    if "show_password" not in request.GET:
-        context['userPassword'] = "".join(["*" for _ in range(len(context['userPassword']))])
-
     return render(request, 'account.html', context)
 
 
