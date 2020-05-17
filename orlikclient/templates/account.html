@@ -2,53 +2,101 @@
 
 <div class="content-section">
     <h1 style="min-height:2.5em; padding:1.25em;text-align: center;">Your account</h1>
-    <form action="/account/" method="GET">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Account details</legend>
-            {{ form }}
-        </fieldset>
-        <div class="form-group">
-            <ul>
-                <li style="min-height: 3em;">
+    {% csrf_token %}
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Account details</legend>
+        {{ form }}
+    </fieldset>
+    <div class="form-group">
+        <ul>
+            <li style="min-height: 3em;">
 
-                    email: {{userLogin}}
+                email: {{userLogin}}
 
-                </li>
-                <li style="min-height: 3em;">
+            </li>
+            <li style="min-height: 3em;">
 
-                    password: {{userPassword}}
+                password: <input type="password" value={{userPassword}} id="showpassword" style="border: 0;">
 
-                    <div class="container h-100">
-                        <div class="d-flex h-100">
-                            <div class="align-self-center mx-auto">
-                                <button class="btn btn-outline-info btn-sm" name="show_password" type="submit">Show password</button>
-                            </div>
+                <div class="container h-100">
+                    <div class="d-flex h-100">
+                        <div class="align-self-center mx-auto">
+                            <button class="btn btn-outline-info btn-sm" name="show_password" onclick="show_password()" type="submit">Show password</button>
                         </div>
                     </div>
-                </li>
-            </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Change Password</legend>
+        {{ form }}
+    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-outline-danger" name="reset_password" type="submit" onclick="display_change()">Reset Password</button>
+    </div>
+
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Delete account</legend>
+        {{ form }}
+    </fieldset>
+    <div class="form-group">
+        <button id="delete" class="btn btn-outline-danger" name="delete_account" type="submit" onclick="display_delete()">Delete account</button>
+    </div>
+
+    <div>
+        <div id="change" class="alert alert-danger" style="display:none; text-align:center;">
+            <form action='/account/change/' method="POST">
+                {% csrf_token %}
+                <h4>Reset password.</h4>
+                <div class="container h-100">
+                    <div class="d-flex h-100">
+                        <div class="align-self-center mx-auto">
+                            <label for="pwd">Please enter new password:</label>
+                            <input name="new_password" type="password" class="form-control " id="pwd">
+                        </div>
+                        <div class="align-self-center mx-auto">
+                            <input class="btn btn-danger" type="submit" value="Confirm" />
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
-    <form action="/account/reset/" method="POST">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Reset Password</legend>
-            {{ form }}
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-danger" name="reset_password" type="submit">Reset Password</button>
+        <div id="del_confirm" class="alert alert-danger" style="display:none; text-align:center;">
+            <form action='/account/delete/' method="POST">
+                {% csrf_token %}
+                <h4>Delete account.</h4>
+                <p> Are you sure?</p>
+                <input class="btn btn-link" type="button" value="Cancel" onclick="hide_all()" />
+                <input class="btn btn-danger" type="submit" value="Confirm" />
+            </form>
         </div>
-    </form>
-    <form action="/account/delete/" method="POST">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Delete account</legend>
-            {{ form }}
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-danger" name="delete_account" type="submit">Delete account</button>
-        </div>
-    </form>
+    </div>
 </div>
+<script>
+    function hide_all() {
+        $('#del_confirm').css('display', 'none')
+        $('#change').css('display', 'none')
+    }
+
+    function display_delete() {
+        hide_all()
+        $('#del_confirm').css('display', 'block')
+    }
+
+    function display_change() {
+        hide_all()
+        $('#change').css('display', 'block')
+    }
+
+    function show_password() {
+        pwd = $('#showpassword')
+        if (pwd.attr("type") == "password") {
+            pwd.attr("type", "text");
+        } else {
+            pwd.attr("type", "password");
+        }
+    }
+</script>
 {% endblock content %}

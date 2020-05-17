@@ -10,14 +10,11 @@ BASE_ENDPOINT = 'http://localhost:5000'
 REGISTER_ENDPOINT = BASE_ENDPOINT + '/users'
 LOGIN_ENDPOINT = BASE_ENDPOINT + '/login'
 RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
-DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/' 
-CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT 
+DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/' 
+CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/' 
 
-token = 'token'
-user = {
-    'userLogin': 'test@test.com',
-    'userPassword': 'testpassword'
-}
+token = ''
+user = {}
 
 user_reservations = [
     {
@@ -104,48 +101,49 @@ def register_user(request):
 
 
 def account(request):
+    global user
+    
     context = {
         'userLogin': user['userLogin'],
         'userPassword': user['userPassword']
     }
 
-    if "show_password" not in request.GET:
-        context['userPassword'] = "".join(["*" for _ in range(len(context['userPassword']))])
-
     return render(request, 'account.html', context)
 
 
 def account_delete(request):
+    global token
+    global user
+
     headers = {
         'Content-type': 'application/json',
-        'Authorization': 'token {}'.format(token)
+        'Authorization': 'Bearer {}'.format(token)
     }
 
-    response = requests.delete(DELETE_USER_ENDPOINT + user['email'], headers=headers)
+    response = requests.delete(DELETE_USER_ENDPOINT + user['userLogin'], headers=headers)
 
-    if response.status_code == 200:
-        print("@@@@ usunięto")
-    else:
+    if response.status_code != 200:
         return redirect('/systemFailure/')
 
-    return render(request, 'register.html')
+    return render(request, 'start.html')
 
 
 def account_change_passwd(request):
+    global token
+    global user
+
     headers = {
         'Content-type': 'application/json',
-        'Authorization': 'token {}'.format(token)
+        'Authorization': 'Bearer {}'.format(token)
     }
-
     new_user_dto = {
-        'userLogin': user['login'],
-        'userPassword': request.POST['password']
+        'userLogin': user['userLogin'],
+        'userPassword': request.POST['new_password']
     }
 
     response = requests.patch(CHANGE_PASSWORD_ENDPOINT, data=json.dumps(new_user_dto), headers=headers)
 
     if response.status_code == 200:
-        print("@@@@ zmieniono")
         user = new_user_dto
     else:
         return redirect('/systemFailure/')

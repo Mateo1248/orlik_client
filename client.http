@@ -21,19 +21,19 @@ Content-Type: application/json
 ###
 
 #Usuwanie użytkownika
-DELETE http://localhost:5000/{userLogin}
+DELETE http://localhost:5000/users/{userLogin}
 Authorization: Bearer {TOKEN}
 
 ###
 
 #Sprawdzanie, czy użytkownik istnieje
-GET http://localhost:5000/{userLogin}
+GET http://localhost:5000/users/{userLogin}
 Authorization: Bearer {TOKEN}
 
 ###
 
 #Zmiana hasła użytkownika
-PATCH http://localhost:5000
+PATCH http://localhost:5000/users/
 Content-Type: application/json
 Authorization: Bearer {TOKEN}
 
