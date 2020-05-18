@@ -31,10 +31,10 @@
             <span class="navbar-text">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Sign in</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Sign up</a>
+                    {% if user.is_authenticated %}
+                    #TODO make logout click only after real login
+                    <a class="nav-link" href="{% url 'register_or_login_view' %}">Logout</a>
+                    {% endif %}
                 </li>
             </ul>
             </span>

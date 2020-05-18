@@ -48,6 +48,8 @@ user_pitches = [
 
 
 def register_or_login_view(request):
+    global token
+    token = ''
     return render(request, 'start.html')
 
 
