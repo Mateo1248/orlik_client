@@ -15,4 +15,5 @@ urlpatterns = [
     path('account/', views.account, name='account'),
     path('account/change/', views.account_change_passwd, name='account-change-passwd'),
     path('account/delete/', views.account_delete, name='account-delete'),
+    path('map/', views.map, name='templateMap')
 ]
