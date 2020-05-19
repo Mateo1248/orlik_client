@@ -1,0 +1,40 @@
+{% extends "home.html" %}
+{% block content %}
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+          crossorigin=""/>
+
+    <style>
+        .mapid {
+            margin: auto;
+            width: 100%;
+            padding: 300px;
+        }
+    </style>
+    <div id="mapid" class="mapid"></div>
+    <script>
+
+
+
+        var map = L.map('mapid').setView([51.1079, 17.0385], 13);
+
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+
+        {% for pitch in user_pitches %}
+            L.marker([pitch.coordinateY, pitch.coordinateX]).addTo(map)
+                .bindPopup(' orlik    <p id="demo"></p> <button onclick=getElementById(\'demo\').innerHTML=Date()>Rezerwuj</button>')
+                .openPopup();
+        {% endfor %}
+
+
+    </script>
+
+    </body>
+{% endblock content %}

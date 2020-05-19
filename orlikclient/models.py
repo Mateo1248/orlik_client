@@ -18,3 +18,9 @@ class Reservation(models.Model):
     start_hour = models.TextField()
     end_hour = models.TextField()
     pitch_name = models.TextField()
+
+
+class Pitch(models.Model):
+    pitch_name = models.TextField()
+    coordinateX = models.TextField()
+    coordinateY = models.TextField()

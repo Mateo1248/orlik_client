@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 
 from .models import RegisterData, Reservation, LoginData
+from .models import RegisterData, Reservation, Pitch
 import requests
 import json
 
@@ -10,11 +11,12 @@ BASE_ENDPOINT = 'http://localhost:5000'
 REGISTER_ENDPOINT = BASE_ENDPOINT + '/users'
 LOGIN_ENDPOINT = BASE_ENDPOINT + '/login'
 RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
-DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/' 
-CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/' 
+DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/'
+CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/'
 
 token = ''
 user = {}
+MAP_ENDPOINT = BASE_ENDPOINT + '/map'
 
 user_reservations = [
     {
@@ -31,7 +33,16 @@ user_reservations = [
         'pitch_name': 'Orlik Dembowskiego',
         'reservation_id': '2'
     }
-]    
+]
+
+user_pitches = [
+    {
+
+        'pitch_name': 'Orlik Spółdzielcza',
+        'coordinateX': 17.0385,
+        'coordinateY': 51.1059
+    }
+]
 
 
 def register_or_login_view(request):
@@ -54,6 +65,28 @@ def system_failure(request):
     return render(request, 'systemFailure.html')
 
 
+def map(request):
+    context = {
+        'user_pitches': user_pitches
+    }
+    headers = {'Content-type': 'application/json'}
+    response = requests.get(MAP_ENDPOINT + 'pilkarz1@gmail.com', headers=headers)
+    print(response)
+    pitches = []
+
+    if response.status_code == 200:
+        for pitch in response.content:
+            print(pitch)
+            pitches.append(
+                Pitch(
+                    pitch_name=pitch['pitchName'],
+                    coordinateX=pitch['coordinateX'],
+                    coordinateY=pitch['coordinateY']
+                )
+            )
+    return render(request, 'templateMap.html', context)
+
+
 def list_user_reservations(request):
     context = {
         'user_reservations': user_reservations
@@ -62,7 +95,7 @@ def list_user_reservations(request):
     reservation_list = []
     response = requests.get(RESERVATIONS_ENDPOINT + 'pilkarz1@gmail.com', headers=headers)
     print(response)
-    #TODO to be changeed after implementing signing in
+    # TODO to be changeed after implementing signing in
     if response.status_code == 200:
         for reservation in response.content:
             print(reservation)
@@ -102,7 +135,7 @@ def register_user(request):
 
 def account(request):
     global user
-    
+
     context = {
         'userLogin': user['userLogin'],
         'userPassword': user['userPassword']
