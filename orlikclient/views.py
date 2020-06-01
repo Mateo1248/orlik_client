@@ -13,10 +13,10 @@ LOGIN_ENDPOINT = BASE_ENDPOINT + '/login'
 RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
 DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/'
 CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/'
+MAP_ENDPOINT = BASE_ENDPOINT + '/map'
 
 token = ''
 user = {}
-MAP_ENDPOINT = BASE_ENDPOINT + '/map'
 
 user_reservations = [
     {
@@ -125,7 +125,7 @@ def register_user(request):
     response = requests.post(REGISTER_ENDPOINT, data=json.dumps(register_data_dto), headers=headers)
     status_code = response.status_code
     if status_code == 201:
-        return redirect('/home/')
+        return login_user(request)
     elif 400 <= status_code < 500:
         print(status_code)
         return redirect('/registerFailure/')
@@ -197,8 +197,8 @@ def login_user(request):
     headers = {'Content-type': 'application/json'}
     response = requests.post(LOGIN_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
     status_code = response.status_code
-    token = response.headers.get('Authorization')
     if status_code == 200:
+        token = response.headers.get('Authorization')
         user = login_data_dto
         return redirect('/home/')
     elif 400 <= status_code < 500:
