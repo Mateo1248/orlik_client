@@ -3,33 +3,171 @@
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
           integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
           crossorigin=""/>
-
     <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 80%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+
+        @-webkit-keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+
+        .modal-header {
+            background-color: #268c87;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 2px 16px;
+        }
+
+        .modal-footer {
+            background-color: #268c87;
+            color: white;
+            padding: 2px 16px;
+        }
+
         .mapid {
             margin: auto;
             width: 100%;
             padding: 300px;
+            top: 20px;
+            position: relative;
+
         }
     </style>
     <div id="mapid" class="mapid"></div>
+
+    <div id="myModal" class="modal">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <p id="pheader"></p>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" class="form-control" id="date" placeholder="Date" max="2020-12-31" min>
+                </div>
+                <div class="form-group">
+                    <label for="start-hour">Start hour</label>
+                    <input type="time" class="form-control" id="start-hour" placeholder="Start hour">
+                </div>
+                <div class="form-group">
+                    <label for="end-hour">End hour</label>
+                    <input type="time" class="form-control" id="end-hour" placeholder="End hour">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light" onclick="bookPitch()">Book</button>
+            </div>
+        </div>
+
+    </div>
+
+
     <script>
+        var modal = document.getElementById("myModal");
+        var mapelement = document.getElementById("mapid");
+        var date = document.getElementById("date");
+        var startHour = document.getElementById("start-hour");
+        var endHour = document.getElementById("end-hour");
+
+
         var map = L.map('mapid').setView([51.1079, 17.0385], 12);
+        var pitchArray = [];
+
+        function bookPitch() {
+
+            var d = new Date();
+            var today = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2, '0')+'-'+String(d.getDate()).padStart(2, '0');
+            if(date.value > date.max || date.value < today){
+                alert("Wrong data!");
+            }
+            if(startHour.value > endHour.value){
+                alert("You'll finish before you start");
+            }
+            // jeśli poszła rezerwacja to : modal.style.display = "none";
+            mapelement.style.zIndex = 0;
+        }
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        var markersLayer = L.featureGroup().addTo(map);
+        var marker, name;
+
         {% for pitch in user_pitches %}
-            L.marker([{{ pitch.coordinateX }}, {{ pitch.coordinateY }}]).addTo(map)
-                .bindPopup('<form action=\'/redirectToMakeReservation/\' method=post> \
-                    {% csrf_token %} \
-                    <input readonly="readonly" type="text" name="id" value="{{pitch.id}}"/><br> \
-                    <input type="text" readonly="readonly" name="name" value="{{pitch.pitch_name}}"<br> \
-                    <button type="submit" class="btn btn-info"> \
-                    Make reservation</button></form>');
+            p_name = "{{ pitch.pitch_name }}";
+
+            marker = L.marker(L.latLng({{ pitch.coordinateY  }}, {{ pitch.coordinateX }}), {title: "{{pitch.pitch_name}}"})
+                .addTo(markersLayer)
+            marker.name = "{{ pitch.pitch_name }}";
+
         {% endfor %}
+
+        markersLayer.on("click", function (event) {
+             modal.style.display = "block";
+            mapelement.style.zIndex = -1;
+            document.getElementById("pheader").innerHTML = event.layer.name
+        });
+
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+                mapelement.style.zIndex = 0;
+            }
+        }
     </script>
+
+
 {% endblock content %}
