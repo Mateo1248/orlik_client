@@ -14,9 +14,10 @@ RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
 DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/'
 CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/'
 MAP_ENDPOINT = BASE_ENDPOINT + '/map'
+PITCHES_ENDPOINT = BASE_ENDPOINT + '/pitches'
 
 token = ''
-user = {}
+user = ''
 
 user_reservations = [
     {
@@ -66,39 +67,43 @@ def system_failure(request):
 
 
 def map(request):
-    context = {
-        'user_pitches': user_pitches
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
     }
-    headers = {'Content-type': 'application/json'}
-    response = requests.get(MAP_ENDPOINT + 'pilkarz1@gmail.com', headers=headers)
-    print(response)
-    pitches = []
+    response = requests.get(PITCHES_ENDPOINT, headers=headers)
 
+    pitches = []
     if response.status_code == 200:
-        for pitch in response.content:
-            print(pitch)
+        response_content = response.json()
+        for pitch in response_content:
             pitches.append(
                 Pitch(
+                    id=pitch['pitchId'],
                     pitch_name=pitch['pitchName'],
-                    coordinateX=pitch['coordinateX'],
-                    coordinateY=pitch['coordinateY']
+                    coordinateX=pitch['latitude'],
+                    coordinateY=pitch['longitude']
                 )
             )
+    else:
+        #     errorPage
+        pass
+
+    context = {
+        'user_pitches': pitches
+    }
     return render(request, 'templateMap.html', context)
 
 
 def list_user_reservations(request):
-    context = {
-        'user_reservations': user_reservations
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
     }
-    headers = {'Content-type': 'application/json'}
     reservation_list = []
-    response = requests.get(RESERVATIONS_ENDPOINT + 'pilkarz1@gmail.com', headers=headers)
-    print(response)
-    # TODO to be changeed after implementing signing in
+    response = requests.get(RESERVATIONS_ENDPOINT + user, headers=headers)
     if response.status_code == 200:
         for reservation in response.content:
-            print(reservation)
             reservation_list.append(
                 Reservation(
                     reservation_id=reservation['reservationId'],
@@ -108,11 +113,54 @@ def list_user_reservations(request):
                     pitch_name=reservation['pitchName'],
                 )
             )
+    context = {
+        'user_reservations': reservation_list
+    }
     return render(request, 'listUserReservations.html', context)
 
 
-def make_reservation(request):
-    return render(request, 'makeReservation.html')
+def make_reservation(request, pitch_id=None):
+    selected_pitch_name = None
+    selected_pitch_id = None
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
+    }
+    response = requests.get(PITCHES_ENDPOINT, headers=headers)
+
+    pitches = []
+    if response.status_code == 200:
+        response_content = response.json()
+        for pitch in response_content:
+            new_pitch = Pitch(
+                id=pitch['pitchId'],
+                pitch_name=pitch['pitchName'],
+                coordinateX=pitch['latitude'],
+                coordinateY=pitch['longitude']
+            )
+            if new_pitch.id != pitch_id:
+                pitches.append(new_pitch)
+            else:
+                selected_pitch_name = new_pitch.pitch_name
+                selected_pitch_id = new_pitch.id
+    else:
+        #     errorPage
+        pass
+
+    if selected_pitch_id is None:
+        context = {
+            'selected_pitch_id': pitches[0].id,
+            'selected_pitch_name': pitches[0].pitch_name,
+            'rest_pitches': pitches[1:]
+        }
+    else:
+        context = {
+            'selected_pitch_id': selected_pitch_id,
+            'selected_pitch_name': selected_pitch_name,
+            'rest_pitches': pitches
+        }
+    print(str(context))
+    return render(request, 'makeReservation.html', context)
 
 
 def register_user(request):
@@ -194,15 +242,27 @@ def login_user(request):
         'userPassword': login_data.password
     }
 
-    headers = {'Content-type': 'application/json'}
+    headers = {
+        'Content-type': 'application/json'
+    }
     response = requests.post(LOGIN_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
     status_code = response.status_code
     if status_code == 200:
         token = response.headers.get('Authorization')
-        user = login_data_dto
+        user = login_data_dto['userLogin']
         return redirect('/home/')
     elif 400 <= status_code < 500:
         print(status_code)
         return redirect('/loginFailure/')
     else:
         return redirect('/systemFailure/')
+
+
+def redirect_to_make_reservation(request):
+    pitch_id = request.POST['id'],
+    return make_reservation(request, int(pitch_id[0]))
+
+
+def confirm_reservation(request):
+    print(request.POST['date'], request.POST['start-hour'], request.POST['end-hour'], request.POST['pitch'])
+    return list_user_reservations(request)

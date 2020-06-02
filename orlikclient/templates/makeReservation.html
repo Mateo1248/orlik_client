@@ -2,30 +2,28 @@
 {% block content %}
     <div class="p-5">
         <div class="card p-5">
-            <form>
-                <div class="form-group">
-                    <div class="dropdown">
-                        <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Pitches
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="#">Orlik Spółdzielcza</a>
-                            <a class="dropdown-item" href="#">Orlik Dembowskiego</a>
-                        </div>
-                    </div>
-                </div>
+            <form action="/confirmReservation/" method="post">
+                {% csrf_token %}
+
+                    <label for="pitch">Choose the pitch</label>
+                    <select name="pitch" id="pitch" class="browser-default custom-select">
+                        <option value="{{ selected_pitch_id }}" selected>{{ selected_pitch_name }}</option>
+                        {% for pitch in rest_pitches %}
+                            <option value="{{ pitch.pitch_id }}">{{ pitch.pitch_name }}</option>
+                        {% endfor %}
+                    </select>
+
                 <div class="form-group">
                     <label for="date">Date</label>
-                    <input type="date" class="form-control" id="date" placeholder="Date">
+                    <input type="date" class="form-control" name="date" placeholder="Date">
                 </div>
                 <div class="form-group">
                     <label for="start-hour">Start hour</label>
-                    <input type="time" class="form-control" id="start-hour" placeholder="Start hour">
+                    <input type="time" class="form-control" name="start-hour" placeholder="Start hour">
                 </div>
                 <div class="form-group">
                     <label for="end-hour">End hour</label>
-                    <input type="time" class="form-control" id="end-hour" placeholder="End hour">
+                    <input type="time" class="form-control" name="end-hour" placeholder="End hour">
                 </div>
                 <button type="submit" class="btn btn-info">Make reservation</button>
             </form>
