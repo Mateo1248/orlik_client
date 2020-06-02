@@ -1,61 +1,87 @@
 * {
     margin: 0;
     padding: 0;
+    font-family: sans-serif;
 }
 
 .hero{
     height: 100%;
     width: 100%;
-    background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("../jpegs/stadium.jpg");
+    background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("../jpegs/stadium.jpg");
     background-position: center;
     background-size: cover;
     position: absolute;
 }
 
 .form-box{
-    width: 40%;
-    height: 40%;
-    position: relative;
-    margin: 6% auto;
-    background: #fff;
+    width: 25%;
+    height: 72%;
+    margin-top: 3%;
+    margin-right: auto;
+    margin-left: auto;
     padding: 1%;
     border-radius: 5px;
-    background-color: #e6fff7;
+    background-color: white;
 }
 
 .texter{
     width: 100%;
     text-align: center;
     font-size: larger;
-    margin-top: 2%;
-    margin-bottom: 5%;
+    margin-bottom: 3%;
+    margin-top: 3%;
+}
+
+.texter_l{
+    width: 100%;
+    text-align: center;
+    font-size: larger;
+    margin-bottom: 7%;
+    margin-top: 10%;
+}
+
+.texter_r{
+    width: 100%;
+    text-align: center;
+    font-size: larger;
+    margin-bottom: 7%;
+    margin-top: 10%;
+    padding-top: 7%;
+    border-top: 1px dotted black;
 }
 
 .one-form{
-    height: 70%;
-    width: 48%;
-    margin: 2% 1%;
+    height: 25%;
+    width: 100%;
     display: block;
-    float: left;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .form-elem{
-    width: 80%;
-    height: 15%;
+    width: 90%;
+    height: 20%;
     border-radius: 10px;
-    margin: 5% auto;
+    margin-bottom: 3%;
+    margin-right: auto;
+    margin-left: auto;
     text-align: left;
+    position: relative;
+    display:block;
 }
 
 .form-btn{
     width: 75%;
     border-radius: 30px;
     border-color: black;
-    height: 20%;
-    margin: 5% auto;
+    height: 27%;
+    margin-top: 7%;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
     font-size: larger;
     background-color: #66d9ff;
+    display:block;
 }
 
 .form-btn:hover{

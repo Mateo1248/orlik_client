@@ -9,15 +9,17 @@
 <body>
     <div class="hero">
         <div class="form-box">
-            <p class="texter"> Welcome in web app OrlikTracker! Please log in, or if you haven't got an account, register now!</p>
+            <p class="texter"> Welcome in web app OrlikTracker! </p>
+            <p class="texter_l"> Login!</p>
             <form class="one-form" action="/loginUser/" method="post">{% csrf_token %}
-                <input class="form-elem" type="email" name="email" placeholder="email">
-                <input class="form-elem" type="password" name="password" placeholder="password">
+                <input class="form-elem" type="email" name="email" placeholder="Enter email">
+                <input class="form-elem" type="password" name="password" placeholder="Enter password">
                 <button class="form-btn" type="submit" value="Login">Login now!</button>
             </form>
+            <p class="texter_r"> Don't have an account? Register now!</p>
             <form class="one-form" action="/addUser/" method="post">{% csrf_token %}
-                <input class="form-elem" type="email" name="email" placeholder="email">
-                <input class="form-elem" type="password" name="password" placeholder="password">
+                <input class="form-elem" type="email" name="email" placeholder="Enter email">
+                <input class="form-elem" type="password" name="password" placeholder="Enter password">
                 <button class="form-btn" type="submit" value="Register">Register now!</button>
             </form>
         </div>
