@@ -17,7 +17,7 @@ class Reservation(models.Model):
     date = models.DateField()
     start_hour = models.TextField()
     end_hour = models.TextField()
-    pitch_name = models.TextField()
+    pitch_id = models.TextField()
 
 
 class Pitch(models.Model):
