@@ -71,10 +71,12 @@ def map(request):
         'Content-type': 'application/json',
         'Authorization': token
     }
+    print("Request for all pitches")
     response = requests.get(PITCHES_ENDPOINT, headers=headers)
 
     pitches = []
     if response.status_code == 200:
+        print("All pitches successfully listed")
         response_content = response.json()
         for pitch in response_content:
             pitches.append(
@@ -86,6 +88,7 @@ def map(request):
                 )
             )
     else:
+        print("Error while listing pitches", response.status_code)
         #     errorPage
         pass
 

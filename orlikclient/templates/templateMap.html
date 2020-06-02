@@ -126,7 +126,6 @@
         var pitchArray = [];
 
         function bookPitch() {
-
             var d = new Date();
             var today = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2, '0')+'-'+String(d.getDate()).padStart(2, '0');
             if(date.value > date.max || date.value < today){
@@ -149,11 +148,22 @@
         {% for pitch in user_pitches %}
             p_name = "{{ pitch.pitch_name }}";
 
-            marker = L.marker(L.latLng({{ pitch.coordinateY  }}, {{ pitch.coordinateX }}), {title: "{{pitch.pitch_name}}"})
-                .addTo(markersLayer)
+            marker = L.marker(L.latLng({{ pitch.coordinateX  }}, {{ pitch.coordinateY }}), {title: "{{pitch.pitch_name}}"})
+                .addTo(markersLayer).bindPopup();
+
             marker.name = "{{ pitch.pitch_name }}";
 
         {% endfor %}
+
+{#        {% for pitch in user_pitches %}#}
+{#            L.marker([{{ pitch.coordinateX }}, {{ pitch.coordinateY }}]).addTo(map)#}
+{#                .bindPopup('<form action=\'/redirectToMakeReservation/\' method=post> \#}
+{#                    {% csrf_token %} \#}
+{#                    <input readonly="readonly" type="text" name="id" value="{{pitch.id}}"/><br> \#}
+{#                    <input type="text" readonly="readonly" name="name" value="{{pitch.pitch_name}}"<br> \#}
+{#                    <button type="submit" class="btn btn-info"> \#}
+{#                    Make reservation</button></form>');#}
+{#        {% endfor %}#}
 
         markersLayer.on("click", function (event) {
              modal.style.display = "block";
