@@ -24,3 +24,14 @@ class Pitch(models.Model):
     pitch_name = models.TextField()
     coordinateX = models.TextField()
     coordinateY = models.TextField()
+
+
+class Pitch_list(models.Model):
+    pitch_id = models.TextField()
+    pitch_name = models.TextField()
+    latitude = models.TextField()
+    longitude = models.TextField()
+    reservations = models.TextField()
+    ratings = models.TextField()
+
+

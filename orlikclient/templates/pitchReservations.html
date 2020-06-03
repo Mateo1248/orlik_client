@@ -1,0 +1,39 @@
+{% extends "home.html" %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static '/css/pitchesList.css' %}">
+    <div class="container">
+        <h2 id="pitch"> </h2>
+           <script>
+               var pitchName = localStorage.getItem("pitchName");  //pobiera dane kliknietego orlika
+               pitch = document.getElementById("pitch");
+               pitch.textContent = pitchName;     // zmienia nazwę headera
+
+               var pitchId = localStorage.getItem("pitchId");
+           </script>
+
+    <div class="form-group">
+        <label for="date">Date</label>
+        <input type="date" class="form-control" id="date" placeholder="Date" onchange="f(this.value)">
+            <script>
+                function f(date_from_selector){
+                    var url_mask = "{% url 'pitchReservations' 12345 "reservation_date" %}"
+                        .replace(/12345/, pitchId)
+                        .replace(/reservation_date/, date_from_selector);
+                    window.location.href =url_mask
+                }
+            </script>
+    </div>
+    <div class="list-group">
+           {% for reservation in reservations %}
+
+               <a id="{{ reservation }}" class="list-group-item list-group-item-action">{{ reservation }}</a>
+
+           {% endfor %}
+
+
+    </div>
+    </div>
+
+
+{% endblock content %}

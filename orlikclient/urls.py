@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.urls import path
 from . import views
 
@@ -16,5 +17,8 @@ urlpatterns = [
     path('account/', views.account, name='account'),
     path('account/change/', views.account_change_password, name='account-change-passwd'),
     path('account/delete/', views.account_delete, name='account-delete'),
-    path('map/', views.show_map, name='templateMap')
+    path('map/', views.show_map, name='templateMap'),
+    path('pitchesList/', views.pitches_list, name='pitchesList'),
+    path('pitchReservations/<int:pitch_id>/<str:reservation_date>', views.pitch_reservations, name='pitchReservations'),
+
 ]
