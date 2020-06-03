@@ -1,0 +1,24 @@
+{% extends "home.html" %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static '/css/pitchesList.css' %}">
+    <div class="container">
+        <h2>Lista orlików</h2>
+        <div class="list-group">
+           {% for pitch in pitches %}
+
+               <a href="{% url 'pitchReservations' pitch.0 currDate %}" id="{{ pitch.1 }}"
+                  class="list-group-item list-group-item-action"
+                  onclick="passPitchData(this.id, {{ pitch.0 }})">{{ pitch.1 }}</a>
+
+           <script>
+               function passPitchData(name, id) {
+                   localStorage.setItem("pitchName", name);
+                   localStorage.setItem("pitchId", id);
+               }
+           </script>
+           {% endfor %}
+        </div>
+
+    </div>
+{% endblock content %}

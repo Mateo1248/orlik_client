@@ -6,6 +6,7 @@ from .models import RegisterData, Reservation, LoginData
 from .models import RegisterData, Reservation, Pitch
 import requests
 import json
+from datetime import date
 
 BASE_ENDPOINT = 'http://localhost:5000'
 REGISTER_ENDPOINT = BASE_ENDPOINT + '/users'
@@ -294,3 +295,40 @@ def login_user(request):
 def confirm_reservation(request):
     print(request.POST['date'], request.POST['start-hour'], request.POST['end-hour'], request.POST['pitch'])
     return list_user_reservations(request)
+
+
+def pitches_list(request):
+    pitches = []
+    current_date = str(date.today())
+    context = {
+        'pitches': pitches,
+        'currDate': current_date
+    }
+
+    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(token)}
+    response = requests.get(PITCHES_ENDPOINT, headers=headers)
+    print(response.status_code)
+    result = response.json()
+
+    for pitch in result:
+        pitches.append(
+            (pitch["pitchId"], pitch['pitchName'], pitch['ratings'])
+        )
+
+    return render(request, 'pitchesList.html', context)
+
+
+def pitch_reservations(request, pitch_id, reservation_date):
+    reservations = []
+    context = {
+        'reservations': reservations
+    }
+    reservation_params = {
+        'whichPitch': pitch_id,
+        'reservationDate': reservation_date
+    }
+    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(token)}
+    response = requests.get(RESERVATIONS_ENDPOINT, params=reservation_params, headers=headers)
+    result = response.json()
+    reservations.append(result)
+    return render(request, 'pitchReservations.html', context)
