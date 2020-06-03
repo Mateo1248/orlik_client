@@ -2,9 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.register_or_login_view, name='register_or_login_view'),
+    path('', views.start, name='register_or_login_view'),
     path('home/', views.home, name='home'),
-    path('register_or_login/', views.register_or_login_view, name='register_or_login_view'),
+    path('start/', views.start, name='start'),
     path('addUser/', views.register_user, name='registerUser'),
     path('loginUser/', views.login_user, name='loginUser'),
     path('registerFailure/', views.register_failure, name='registerFailure'),
@@ -14,7 +14,7 @@ urlpatterns = [
     path('makeReservation/', views.make_reservation, name='makeReservation'),
     path('confirmReservation/', views.confirm_reservation, name='confirmReservation'),
     path('account/', views.account, name='account'),
-    path('account/change/', views.account_change_passwd, name='account-change-passwd'),
+    path('account/change/', views.account_change_password, name='account-change-passwd'),
     path('account/delete/', views.account_delete, name='account-delete'),
-    path('map/', views.map, name='templateMap')
+    path('map/', views.show_map, name='templateMap')
 ]

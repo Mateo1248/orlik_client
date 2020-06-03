@@ -14,7 +14,6 @@ RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations'
 USER_RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations/users'
 DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/'
 CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/'
-MAP_ENDPOINT = BASE_ENDPOINT + '/map'
 PITCHES_ENDPOINT = BASE_ENDPOINT + '/pitches'
 
 token = ''
@@ -47,7 +46,7 @@ user_pitches = [
 ]
 
 
-def register_or_login_view(request):
+def start(request):
     global token
     token = ''
     return render(request, 'start.html')
@@ -69,7 +68,7 @@ def system_failure(request):
     return render(request, 'systemFailure.html')
 
 
-def map(request):
+def show_map(request):
     headers = {
         'Content-type': 'application/json',
         'Authorization': token
@@ -204,12 +203,12 @@ def register_user(request):
         return redirect('/systemFailure/')
 
 
-def account(request):
+def account(request, password_changed=False):
     global user
 
     context = {
-        'userLogin': user['userLogin'],
-        'userPassword': user['userPassword']
+        'userLogin': user,
+        'passwordChanged': password_changed
     }
 
     return render(request, 'account.html', context)
@@ -221,38 +220,46 @@ def account_delete(request):
 
     headers = {
         'Content-type': 'application/json',
-        'Authorization': 'Bearer {}'.format(token)
+        'Authorization': token
     }
 
-    response = requests.delete(DELETE_USER_ENDPOINT + user['userLogin'], headers=headers)
+    print("Deleting an account...")
+    response = requests.delete(DELETE_USER_ENDPOINT + user, headers=headers)
 
     if response.status_code != 200:
+        print("Error occurred while deleting account", response.status_code)
         return redirect('/systemFailure/')
 
+    print("Account deleted successfully")
     return render(request, 'start.html')
 
 
-def account_change_passwd(request):
+def account_change_password(request):
     global token
     global user
 
     headers = {
         'Content-type': 'application/json',
-        'Authorization': 'Bearer {}'.format(token)
+        'Authorization': token
     }
     new_user_dto = {
-        'userLogin': user['userLogin'],
+        'userLogin': user,
         'userPassword': request.POST['new_password']
     }
 
+    print("Requesting password change...")
     response = requests.patch(CHANGE_PASSWORD_ENDPOINT, data=json.dumps(new_user_dto), headers=headers)
 
     if response.status_code == 200:
-        user = new_user_dto
+        token = requests.post(LOGIN_ENDPOINT, data=json.dumps(new_user_dto), headers=headers)\
+            .headers.get('Authorization')
+        password_changed = True
+        print("Password successfully changed")
     else:
+        print("Error occurred when changing password. Error code", response.status_code)
         return redirect('/systemFailure/')
 
-    return account(request)
+    return account(request, password_changed)
 
 
 def login_user(request):
@@ -268,14 +275,17 @@ def login_user(request):
     headers = {
         'Content-type': 'application/json'
     }
+
+    print("Signing in...")
     response = requests.post(LOGIN_ENDPOINT, data=json.dumps(login_data_dto), headers=headers)
     status_code = response.status_code
     if status_code == 200:
+        print("User signed in successfully")
         token = response.headers.get('Authorization')
         user = login_data_dto['userLogin']
         return redirect('/home/')
     elif 400 <= status_code < 500:
-        print(status_code)
+        print("Error occurred while signing in", status_code)
         return redirect('/loginFailure/')
     else:
         return redirect('/systemFailure/')
