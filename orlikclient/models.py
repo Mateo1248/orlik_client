@@ -12,6 +12,15 @@ class LoginData(models.Model):
     password = models.TextField()
 
 
+class PitchReservation(models.Model):
+    reservation_id = models.TextField()
+    date = models.DateField()
+    start_hour = models.TextField()
+    end_hour = models.TextField()
+    pitch_id = models.TextField()
+    user_name = models.TextField()
+
+
 class Reservation(models.Model):
     reservation_id = models.TextField()
     date = models.DateField()
@@ -33,5 +42,3 @@ class Pitch_list(models.Model):
     longitude = models.TextField()
     reservations = models.TextField()
     ratings = models.TextField()
-
-

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 
-from .models import RegisterData, Reservation, LoginData
+from .models import RegisterData, Reservation, LoginData, PitchReservation
 from .models import RegisterData, Reservation, Pitch
 import requests
 import json
@@ -252,7 +252,7 @@ def account_change_password(request):
     response = requests.patch(CHANGE_PASSWORD_ENDPOINT, data=json.dumps(new_user_dto), headers=headers)
 
     if response.status_code == 200:
-        token = requests.post(LOGIN_ENDPOINT, data=json.dumps(new_user_dto), headers=headers)\
+        token = requests.post(LOGIN_ENDPOINT, data=json.dumps(new_user_dto), headers=headers) \
             .headers.get('Authorization')
         password_changed = True
         print("Password successfully changed")
@@ -312,7 +312,7 @@ def pitches_list(request):
 
     for pitch in result:
         pitches.append(
-            (pitch["pitchId"], pitch['pitchName'], pitch['ratings'])
+            (pitch['pitchId'], pitch['pitchName'], pitch['ratings'])
         )
 
     return render(request, 'pitchesList.html', context)
@@ -320,15 +320,33 @@ def pitches_list(request):
 
 def pitch_reservations(request, pitch_id, reservation_date):
     reservations = []
-    context = {
-        'reservations': reservations
-    }
     reservation_params = {
         'whichPitch': pitch_id,
         'reservationDate': reservation_date
     }
-    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(token)}
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
+    }
+
+    print("Getting pitch reservations...")
     response = requests.get(RESERVATIONS_ENDPOINT, params=reservation_params, headers=headers)
-    result = response.json()
-    reservations.append(result)
+    if response.status_code == 200:
+        print("Successfully obtained pitch reservations")
+        for reservation in response.json():
+            reservations.append(
+                PitchReservation(
+                    reservation_id=reservation['reservationId'],
+                    date=reservation['reservationDate'],
+                    start_hour=reservation['startHour'],
+                    end_hour=reservation['endHour'],
+                    pitch_id=reservation['whichPitch'],
+                    user_name=reservation['whichUser']
+                )
+            )
+    else:
+        print("Error occurred while getting pitch reservations", response.status_code)
+    context = {
+        'reservations': reservations
+    }
     return render(request, 'pitchReservations.html', context)
