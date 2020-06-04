@@ -1,5 +1,27 @@
 {% extends "home.html" %}
 {% block content %}
+    <div id="del_confirm" class="alert alert-danger" style="display:none; text-align:center; margin-top: 3%">
+        <form action='/cancelReservation/' method="POST">
+            {% csrf_token %}
+            <h4>Cancel chosen reservation.</h4>
+            <p> Are you sure?</p>
+            <input type="text" name="canceled_reservation" id="canceled_reservation" value="" style="display:none"/>
+            <input class="btn btn-light" type="button" value="Cancel" onclick="hide_all()"/>
+            <input class="btn btn-danger" type="submit" value="Confirm"/>
+        </form>
+    </div>
+
+    <script>
+        function hide_all() {
+            $('#del_confirm').css('display', 'none');
+        }
+        function display_delete(reservation) {
+            window.scrollTo(0, 0);
+            hide_all();
+            $('#del_confirm').css('display', 'block');
+            $('#canceled_reservation').val(reservation);
+        }
+    </script>
     {% for reservation in user_reservations %}
         <article class="p-3">
             <div class="card">
@@ -13,9 +35,12 @@
                     <p class="card-text">
                         {{ reservation.start_hour }} - {{ reservation.end_hour }}
                     </p>
+                    <p class="card-text" name="reservation_id" id="reservation_id" style="display: none">
+                        {{ reservation.reservation_id }}
+                    </p>
                 </div>
                 <div class="card-footer text-center">
-                    <a class="btn btn-danger center" href="#">
+                    <a class="btn btn-danger center" onclick="display_delete(`{{ reservation.reservation_id}}`)">
                         Cancel reservation
                     </a>
                 </div>

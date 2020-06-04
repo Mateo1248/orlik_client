@@ -13,6 +13,7 @@ urlpatterns = [
     path('systemFailure/', views.system_failure, name='systemFailure'),
     path('listUserReservations/', views.list_user_reservations, name='listUserReservations'),
     path('makeReservation/', views.make_reservation, name='makeReservation'),
+    path('cancelReservation/', views.cancel_reservation, name='cancelReservation'),
     path('confirmReservation/', views.confirm_reservation, name='confirmReservation'),
     path('account/', views.account, name='account'),
     path('account/change/', views.account_change_password, name='account-change-passwd'),
