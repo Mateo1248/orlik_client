@@ -16,6 +16,7 @@ USER_RESERVATIONS_ENDPOINT = BASE_ENDPOINT + '/reservations/users'
 DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/'
 CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/'
 PITCHES_ENDPOINT = BASE_ENDPOINT + '/pitches'
+CANCEL_RESERVATION_ENDPOINT = BASE_ENDPOINT + '/reservations/'
 
 token = ''
 user = ''
@@ -49,12 +50,20 @@ user_pitches = [
 
 def start(request):
     global token
+    global user
+    user = ''
     token = ''
     return render(request, 'start.html')
 
 
 def home(request):
-    return render(request, 'home.html')
+    global token
+    global user
+
+    if token != '' and user != '':
+        return render(request, 'home.html')
+    else:
+        return render(request, 'systemFailure.html')
 
 
 def register_failure(request):
@@ -70,59 +79,15 @@ def system_failure(request):
 
 
 def show_map(request):
-    headers = {
-        'Content-type': 'application/json',
-        'Authorization': token
-    }
-    print("Request for all pitches")
-    response = requests.get(PITCHES_ENDPOINT, headers=headers)
+    global token
+    global user
 
-    pitches = []
-    if response.status_code == 200:
-        print("All pitches successfully listed")
-        response_content = response.json()
-        for pitch in response_content:
-            pitches.append(
-                Pitch(
-                    id=pitch['pitchId'],
-                    pitch_name=pitch['pitchName'],
-                    coordinateX=pitch['latitude'],
-                    coordinateY=pitch['longitude']
-                )
-            )
-    else:
-        print("Error while listing pitches", response.status_code)
-        #     errorPage
-        pass
+    if token != '' and user != '':
 
-    context = {
-        'user_pitches': pitches
-    }
-    return render(request, 'templateMap.html', context)
-
-
-def list_user_reservations(request):
-    headers = {
-        'Content-type': 'application/json',
-        'Authorization': token
-    }
-    reservation_list = []
-    pitch_names = []
-    print("Listing user reservations", user)
-    response = requests.get(USER_RESERVATIONS_ENDPOINT + "/" + user, headers=headers)
-    if response.status_code == 200:
-        print("Reservation successfully listed")
-        for reservation in response.json():
-            reservation_list.append(
-                Reservation(
-                    reservation_id=reservation['reservationId'],
-                    date=reservation['reservationDate'],
-                    start_hour=reservation['startHour'],
-                    end_hour=reservation['endHour'],
-                    pitch_id=reservation['whichPitch'],
-                )
-            )
-
+        headers = {
+            'Content-type': 'application/json',
+            'Authorization': token
+        }
         print("Request for all pitches")
         response = requests.get(PITCHES_ENDPOINT, headers=headers)
 
@@ -144,16 +109,76 @@ def list_user_reservations(request):
             #     errorPage
             pass
 
-        pitch_names = {pitch.id: pitch.pitch_name for pitch in pitches}
+        context = {
+            'user_pitches': pitches
+        }
+        return render(request, 'templateMap.html', context)
 
-        for reservation in reservation_list:
-            reservation.pitch_name = pitch_names[reservation.pitch_id]
     else:
-        print("Error occurred while listing user reservations", response.status_code)
-    context = {
-        'user_reservations': reservation_list
-    }
-    return render(request, 'listUserReservations.html', context)
+        return render(request, 'systemFailure.html')
+
+
+def list_user_reservations(request):
+    global token
+    global user
+
+    if token != '' and user != '':
+
+        headers = {
+            'Content-type': 'application/json',
+            'Authorization': token
+        }
+        reservation_list = []
+        pitch_names = []
+        print("Listing user reservations", user)
+        response = requests.get(USER_RESERVATIONS_ENDPOINT + "/" + user, headers=headers)
+        if response.status_code == 200:
+            print("Reservation successfully listed")
+            for reservation in response.json():
+                reservation_list.append(
+                    Reservation(
+                        reservation_id=reservation['reservationId'],
+                        date=reservation['reservationDate'],
+                        start_hour=reservation['startHour'],
+                        end_hour=reservation['endHour'],
+                        pitch_id=reservation['whichPitch'],
+                    )
+                )
+
+            print("Request for all pitches")
+            response = requests.get(PITCHES_ENDPOINT, headers=headers)
+
+            pitches = []
+            if response.status_code == 200:
+                print("All pitches successfully listed")
+                response_content = response.json()
+                for pitch in response_content:
+                    pitches.append(
+                        Pitch(
+                            id=pitch['pitchId'],
+                            pitch_name=pitch['pitchName'],
+                            coordinateX=pitch['latitude'],
+                            coordinateY=pitch['longitude']
+                        )
+                    )
+            else:
+                print("Error while listing pitches", response.status_code)
+                #     errorPage
+                pass
+
+            pitch_names = {pitch.id: pitch.pitch_name for pitch in pitches}
+
+            for reservation in reservation_list:
+                reservation.pitch_name = pitch_names[reservation.pitch_id]
+        else:
+            print("Error occurred while listing user reservations", response.status_code)
+        context = {
+            'user_reservations': reservation_list
+        }
+        return render(request, 'listUserReservations.html', context)
+
+    else:
+        return render(request, 'systemFailure.html')
 
 
 def make_reservation(request):
@@ -186,6 +211,26 @@ def make_reservation(request):
     return list_user_reservations(request)
 
 
+def cancel_reservation(request):
+    global token
+
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
+    }
+
+    reservationId = request.POST['canceled_reservation']
+
+    response = requests.delete(CANCEL_RESERVATION_ENDPOINT + reservationId, headers=headers)
+
+    if response.status_code != 204:
+        print("Error occurred while canceling reservation", response.status_code)
+        return redirect('/systemFailure/')
+
+    print("Reservation canceled successfully")
+    return list_user_reservations(request)
+
+
 def register_user(request):
     register_data = RegisterData(email=request.POST['email'], password=request.POST['password'])
     register_data_dto = {
@@ -205,14 +250,19 @@ def register_user(request):
 
 
 def account(request, password_changed=False):
+    global token
     global user
 
-    context = {
-        'userLogin': user,
-        'passwordChanged': password_changed
-    }
+    if token != '' and user != '':
+        context = {
+            'userLogin': user,
+            'passwordChanged': password_changed
+        }
 
-    return render(request, 'account.html', context)
+        return render(request, 'account.html', context)
+
+    else:
+        return render(request, 'systemFailure.html')
 
 
 def account_delete(request):
@@ -232,6 +282,8 @@ def account_delete(request):
         return redirect('/systemFailure/')
 
     print("Account deleted successfully")
+    user = ''
+    token = ''
     return render(request, 'start.html')
 
 
@@ -298,24 +350,32 @@ def confirm_reservation(request):
 
 
 def pitches_list(request):
-    pitches = []
-    current_date = str(date.today())
-    context = {
-        'pitches': pitches,
-        'currDate': current_date
-    }
+    global token
+    global user
 
-    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(token)}
-    response = requests.get(PITCHES_ENDPOINT, headers=headers)
-    print(response.status_code)
-    result = response.json()
+    if token != '' and user != '':
 
-    for pitch in result:
-        pitches.append(
-            (pitch['pitchId'], pitch['pitchName'], pitch['ratings'])
-        )
+        pitches = []
+        current_date = str(date.today())
+        context = {
+            'pitches': pitches,
+            'currDate': current_date
+        }
 
-    return render(request, 'pitchesList.html', context)
+        headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(token)}
+        response = requests.get(PITCHES_ENDPOINT, headers=headers)
+        print(response.status_code)
+        result = response.json()
+
+        for pitch in result:
+            pitches.append(
+                (pitch['pitchId'], pitch['pitchName'], pitch['ratings'])
+            )
+
+        return render(request, 'pitchesList.html', context)
+
+    else:
+        return render(request, 'systemFailure.html')
 
 
 def pitch_reservations(request, pitch_id, reservation_date):
