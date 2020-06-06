@@ -42,3 +42,9 @@ class Pitch_list(models.Model):
     longitude = models.TextField()
     reservations = models.TextField()
     ratings = models.TextField()
+
+
+class Rating(models.Model):
+    pitch_id = models.TextField()
+    pitch_name = models.TextField()
+    rating = models.DecimalField(decimal_places=2, max_digits=5)

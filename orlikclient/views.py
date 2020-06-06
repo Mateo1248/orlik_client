@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 
-from .models import RegisterData, Reservation, LoginData, PitchReservation
+from .models import RegisterData, Reservation, LoginData, PitchReservation, Rating
 from .models import RegisterData, Reservation, Pitch
 import requests
 import json
@@ -17,6 +17,7 @@ DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/'
 CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/'
 PITCHES_ENDPOINT = BASE_ENDPOINT + '/pitches'
 CANCEL_RESERVATION_ENDPOINT = BASE_ENDPOINT + '/reservations/'
+RATING_ENDPOINT = BASE_ENDPOINT + "/ratings"
 
 token = ''
 user = ''
@@ -118,7 +119,7 @@ def show_map(request):
         return render(request, 'systemFailure.html')
 
 
-def list_user_reservations(request, error_occurred = False):
+def list_user_reservations(request, error_occurred=False):
     global token
     global user
 
@@ -353,32 +354,37 @@ def confirm_reservation(request):
 
 
 def pitches_list(request):
-    global token
-    global user
+    pitches = []
+    current_date = str(date.today())
 
-    if token != '' and user != '':
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
+    }
+    response = requests.get(PITCHES_ENDPOINT, headers=headers)
 
-        pitches = []
-        current_date = str(date.today())
-        context = {
-            'pitches': pitches,
-            'currDate': current_date
-        }
+    print(response.status_code)
+    result = response.json()
+    for pitch in result:
+        rating = Rating(
+            pitch_id=pitch['pitchId'],
+            pitch_name=pitch['pitchName'],
+            rating=0.0
+        )
+        print("Getting pitch", rating.pitch_name, " ", str(rating.pitch_id), "rating...")
+        rating_response = requests.get(RATING_ENDPOINT + "?pitchId=" + str(rating.pitch_id), headers=headers)
 
-        headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(token)}
-        response = requests.get(PITCHES_ENDPOINT, headers=headers)
-        print(response.status_code)
-        result = response.json()
-
-        for pitch in result:
-            pitches.append(
-                (pitch['pitchId'], pitch['pitchName'], pitch['ratings'])
-            )
-
-        return render(request, 'pitchesList.html', context)
-
-    else:
-        return render(request, 'systemFailure.html')
+        if rating_response.status_code == 200:
+            print("Successfully obtained pitch average rating")
+            rating.rating = round(rating_response.json()['averageRating'], 2)
+        else:
+            print("Error while getting pitch average rating")
+        pitches.append(rating)
+    context = {
+        'pitches': pitches,
+        'currDate': current_date,
+    }
+    return render(request, 'pitchesList.html', context)
 
 
 def pitch_reservations(request, pitch_id, reservation_date):
