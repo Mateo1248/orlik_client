@@ -78,11 +78,15 @@ def system_failure(request):
     return render(request, 'systemFailure.html')
 
 
-def show_map(request):
+def show_map(request, find_by_name=False):
     global token
     global user
 
     if token != '' and user != '':
+
+        pitch_not_found = False
+        pitches = []
+        pitches_filter = []
 
         headers = {
             'Content-type': 'application/json',
@@ -91,10 +95,10 @@ def show_map(request):
         print("Request for all pitches")
         response = requests.get(PITCHES_ENDPOINT, headers=headers)
 
-        pitches = []
         if response.status_code == 200:
             print("All pitches successfully listed")
             response_content = response.json()
+
             for pitch in response_content:
                 pitches.append(
                     Pitch(
@@ -104,16 +108,30 @@ def show_map(request):
                         coordinateY=pitch['longitude']
                     )
                 )
+            
+            if find_by_name:
+                pitches_filter = list (
+                    filter (
+                        lambda pitch: pitch.pitch_name == request.POST['pitch_name'],
+                        pitches
+                    )
+                )
+                if len(pitches_filter) <= 0:
+                    pitch_not_found = True
+        elif response.status_code == 404:
+            print("Pitches not found.")
+            pitch_not_found = True
         else:
             print("Error while listing pitches", response.status_code)
             #     errorPage
             pass
 
         context = {
-            'user_pitches': pitches
+            'user_pitches': pitches,
+            'pitch_not_found': pitch_not_found,
+            'pitches_filter': pitches_filter
         }
         return render(request, 'templateMap.html', context)
-
     else:
         return render(request, 'systemFailure.html')
 
@@ -359,7 +377,8 @@ def pitches_list(request):
         current_date = str(date.today())
         context = {
             'pitches': pitches,
-            'currDate': current_date
+            'currDate': current_date,
+            'pitches_n': [el['name'] for el in pitches]
         }
 
         headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(token)}
@@ -410,3 +429,8 @@ def pitch_reservations(request, pitch_id, reservation_date):
         'reservations': reservations
     }
     return render(request, 'pitchReservations.html', context)
+
+
+def find_pitch(request):    
+    return show_map(request, find_by_name=True)
+

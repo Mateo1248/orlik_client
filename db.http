@@ -1,0 +1,121 @@
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 1 - ul.Gajowa",
+  "longitude": 17.041869,
+  "latitude": 51.092097
+}
+
+###
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 2 - ul.Sanocka",
+  "longitude": 17.02642,
+  "latitude": 51.095547
+}
+
+###
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 3 - ul.Mosiezna",
+  "longitude": 17.00007,
+  "latitude": 51.101153
+}
+
+###
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 4 - ul.Walbrzyska",
+  "longitude": 16.980589,
+  "latitude": 51.065234
+}
+
+###
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 5 - ul.Elizy Orzeszkowej",
+  "longitude": 17.056133,
+  "latitude": 51.122036
+}
+
+###
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 6 - ul.Edwarda Wittiga",
+  "longitude": 17.085481,
+  "latitude": 51.101999
+}
+
+###
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 7 - ul.Bacciarellego",
+  "longitude": 17.114738,
+  "latitude": 51.103341
+}
+
+###
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 8 - ul.Zmigrodzka",
+  "longitude": 17.030107,
+  "latitude": 51.148361
+}
+
+###
+
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 9 - ul.Krasinskiego",
+  "longitude": 17.040779,
+  "latitude": 51.111318
+}
+
+###
+
+
+POST http://localhost:5000/pitches
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0LmRhd2lkQHRlc3QudGVzdCIsImlhdCI6MTU4OTM4NDE2NX0.R7eI1kc3nu4LFNYOkvzmj9HTR2y5Q-xnW53iuAr0rkqvQ7Ftl-9qbCFEPIPKukm-uf2G2xuMd49rfz2xWPW21w
+
+{
+  "pitchName": "Orlik nr 10 - ul.Pionierow",
+  "longitude": 17.079832,
+  "latitude": 51.067069
+}
+
+###

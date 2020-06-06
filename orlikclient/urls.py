@@ -16,10 +16,12 @@ urlpatterns = [
     path('cancelReservation/', views.cancel_reservation, name='cancelReservation'),
     path('confirmReservation/', views.confirm_reservation, name='confirmReservation'),
     path('account/', views.account, name='account'),
-    path('account/change/', views.account_change_password, name='account-change-passwd'),
-    path('account/delete/', views.account_delete, name='account-delete'),
+    path('account/change/', views.account_change_password, name='accountChange'),
+    path('account/delete/', views.account_delete, name='accountDelete'),
     path('map/', views.show_map, name='templateMap'),
+    path('map/find/', views.find_pitch, name='templateMapFind'),
     path('pitchesList/', views.pitches_list, name='pitchesList'),
     path('pitchReservations/<int:pitch_id>/<str:reservation_date>', views.pitch_reservations, name='pitchReservations'),
+
 
 ]
