@@ -7,19 +7,24 @@
         <h2 class="font-weight-bold">Pitches</h2>
         <div class="list-group">
             {% for pitch in pitches %}
-                <a href="{% url 'pitchReservations' pitch.pitch_id currDate %}" id="{{ pitch.pitch_name }}"
-                   onload="colorRating()"
-                   class="list-group-item list-group-item-action"
-                   onclick="passPitchData(this.id, {{ pitch.pitch_id }})">
-                    <div>
-                        {{ pitch.pitch_name }}
-                        <div id="rating_container" class="float-right font-weight-bold">
-                            <p id="rating" class="rating">
-                                {{ pitch.rating }}
-                            </p>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text font-weight-bold">
+                            {{ pitch.pitch_name }}
+                        </div>
+                        <div id="{{ pitch.pitch_id }}" class="h1 card-text rating float-right font-weight-bold"
+                             onclick="rateModal({{ pitch.pitch_id }})">
+                            {{ pitch.rating }}
+                        </div>
+                        <div class="card-text">
+                            <a href="{% url 'pitchReservations' pitch.pitch_id currDate %}" id="{{ pitch.pitch_name }}"
+                               onload="colorRating()"
+                               onclick="passPitchData(this.id, {{ pitch.pitch_id }})">
+                                <button class="btn btn-info">Schedule</button>
+                            </a>
                         </div>
                     </div>
-                </a>
+                </div>
                 <script>
 
                     function getRatingClass(rating) {
@@ -43,7 +48,6 @@
 
                     window.onload = colorRating;
 
-
                     function passPitchData(name, id) {
                         localStorage.setItem("pitchName", name);
                         localStorage.setItem("pitchId", id);
@@ -56,8 +60,8 @@
                     function rateModal(whichPitch) {
                         $("#myModal").modal();
                         document.getElementById("modal_heading").textContent = `Rate pitch: `;
+                        $("#rated_pitch_id").val(whichPitch)
                         localStorage.setItem("ratePitchId", whichPitch);
-
                     }
 
                     function submitRate() {
@@ -75,49 +79,51 @@
                                 <h4 id="modal_heading" class="modal-title">Modal Heading</h4>
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
-                            <div class="modal-body">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions"
-                                           id="inlineRadio1"
-                                           value="1" onclick="setRateValue(1)">
-                                    <label class="form-check-label" for="inlineRadio1">1</label>
+                            <form action="/submitRate/" method="post">
+                                {% csrf_token %}
+                                <input type="text" id="rated_pitch_id" name="rated_pitch_id" hidden value="">
+                                <div class="modal-body">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio1"
+                                               value="1" onclick="setRateValue(1)">
+                                        <label class="form-check-label" for="inlineRadio1">1</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio2"
+                                               value="2" onclick="setRateValue(2)">
+                                        <label class="form-check-label" for="inlineRadio2">2</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio3"
+                                               value="3" onclick="setRateValue(3)">
+                                        <label class="form-check-label" for="inlineRadio3">3</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio3"
+                                               value="4" onclick="setRateValue(4)">
+                                        <label class="form-check-label" for="inlineRadio4">4</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio3"
+                                               value="5" onclick="setRateValue(5)">
+                                        <label class="form-check-label" for="inlineRadio5">5</label>
+                                    </div>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions"
-                                           id="inlineRadio2"
-                                           value="2" onclick="setRateValue(2)">
-                                    <label class="form-check-label" for="inlineRadio2">2</label>
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-info" onclick="submitRate()">Rate!
+                                    </button>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions"
-                                           id="inlineRadio3"
-                                           value="3" onclick="setRateValue(3)">
-                                    <label class="form-check-label" for="inlineRadio3">3</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions"
-                                           id="inlineRadio3"
-                                           value="4" onclick="setRateValue(4)">
-                                    <label class="form-check-label" for="inlineRadio4">4</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions"
-                                           id="inlineRadio3"
-                                           value="5" onclick="setRateValue(5)">
-                                    <label class="form-check-label" for="inlineRadio5">5</label>
-                                </div>
-                            </div>
-                            <!-- Modal footer -->
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" onclick="submitRate()">Rate!
-                                </button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-
-
     </div>
 {% endblock content %}

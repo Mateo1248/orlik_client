@@ -419,3 +419,28 @@ def pitch_reservations(request, pitch_id, reservation_date):
         'reservations': reservations
     }
     return render(request, 'pitchReservations.html', context)
+
+
+def submit_rate(request):
+    pitch_id = request.POST['rated_pitch_id']
+    rate = request.POST['inlineRadioOptions']
+    print(pitch_id, rate)
+
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
+    }
+
+    request_body = {
+        "pitchId": pitch_id,
+        "userId": user,
+        "value": rate
+    }
+    response = requests.post(RATING_ENDPOINT, data=json.dumps(request_body), headers=headers)
+
+    if 200 <= response.status_code < 300:
+        print("Successfully submitted rate")
+    else:
+        print("Error while submitting rate")
+
+    return pitches_list(request)
