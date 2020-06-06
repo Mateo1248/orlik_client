@@ -1,5 +1,13 @@
 {% extends "home.html" %}
 {% block content %}
+    {% if error_occurred %}
+        <div class="alert alert-danger mx-auto" role="alert" id="error">
+            Wystąpił błąd podczas tworzenia rezerwacji, najlepsza obsługa techniczna nad tym pracuje.
+            <button class="btn btn-light" onclick="closeAlert()">
+                OK
+            </button>
+        </div>
+    {% endif %}
     <div id="del_confirm" class="alert alert-danger" style="display:none; text-align:center; margin-top: 3%">
         <form action='/cancelReservation/' method="POST">
             {% csrf_token %}
@@ -15,6 +23,11 @@
         function hide_all() {
             $('#del_confirm').css('display', 'none');
         }
+
+        function closeAlert() {
+            $('#error').hide()
+        }
+
         function display_delete(reservation) {
             window.scrollTo(0, 0);
             hide_all();
@@ -40,7 +53,7 @@
                     </p>
                 </div>
                 <div class="card-footer text-center">
-                    <a class="btn btn-danger center" onclick="display_delete(`{{ reservation.reservation_id}}`)">
+                    <a class="btn btn-danger center" onclick="display_delete(`{{ reservation.reservation_id }}`)">
                         Cancel reservation
                     </a>
                 </div>

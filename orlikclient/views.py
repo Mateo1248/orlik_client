@@ -118,7 +118,7 @@ def show_map(request):
         return render(request, 'systemFailure.html')
 
 
-def list_user_reservations(request):
+def list_user_reservations(request, error_occurred = False):
     global token
     global user
 
@@ -173,7 +173,8 @@ def list_user_reservations(request):
         else:
             print("Error occurred while listing user reservations", response.status_code)
         context = {
-            'user_reservations': reservation_list
+            'user_reservations': reservation_list,
+            'error_occurred': error_occurred
         }
         return render(request, 'listUserReservations.html', context)
 
@@ -202,13 +203,15 @@ def make_reservation(request):
 
     print("Sending request for make reservation")
     response = requests.post(RESERVATIONS_ENDPOINT, headers=headers, data=json.dumps(request_body))
+    error_occurred = False
 
     if 300 > response.status_code >= 200:
         print("Reservation successfully created", response.status_code)
     else:
+        error_occurred = True
         print("Error while making reservation", response.status_code)
 
-    return list_user_reservations(request)
+    return list_user_reservations(request, error_occurred)
 
 
 def cancel_reservation(request):
