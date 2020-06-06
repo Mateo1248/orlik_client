@@ -79,11 +79,15 @@ def system_failure(request):
     return render(request, 'systemFailure.html')
 
 
-def show_map(request):
+def show_map(request, find_by_name=False):
     global token
     global user
 
     if token != '' and user != '':
+
+        pitch_not_found = False
+        pitches = []
+        pitches_filter = []
 
         headers = {
             'Content-type': 'application/json',
@@ -92,10 +96,10 @@ def show_map(request):
         print("Request for all pitches")
         response = requests.get(PITCHES_ENDPOINT, headers=headers)
 
-        pitches = []
         if response.status_code == 200:
             print("All pitches successfully listed")
             response_content = response.json()
+
             for pitch in response_content:
                 pitches.append(
                     Pitch(
@@ -105,16 +109,30 @@ def show_map(request):
                         coordinateY=pitch['longitude']
                     )
                 )
+            
+            if find_by_name:
+                pitches_filter = list (
+                    filter (
+                        lambda pitch: pitch.pitch_name == request.POST['pitch_name'],
+                        pitches
+                    )
+                )
+                if len(pitches_filter) <= 0:
+                    pitch_not_found = True
+        elif response.status_code == 404:
+            print("Pitches not found.")
+            pitch_not_found = True
         else:
             print("Error while listing pitches", response.status_code)
             #     errorPage
             pass
 
         context = {
-            'user_pitches': pitches
+            'user_pitches': pitches,
+            'pitch_not_found': pitch_not_found,
+            'pitches_filter': pitches_filter
         }
         return render(request, 'templateMap.html', context)
-
     else:
         return render(request, 'systemFailure.html')
 
@@ -420,6 +438,9 @@ def pitch_reservations(request, pitch_id, reservation_date):
     }
     return render(request, 'pitchReservations.html', context)
 
+
+def find_pitch(request):    
+    return show_map(request, find_by_name=True)
 
 def submit_rate(request):
     pitch_id = request.POST['rated_pitch_id']
