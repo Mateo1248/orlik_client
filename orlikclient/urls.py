@@ -22,6 +22,5 @@ urlpatterns = [
     path('map/find/', views.find_pitch, name='templateMapFind'),
     path('pitchesList/', views.pitches_list, name='pitchesList'),
     path('pitchReservations/<int:pitch_id>/<str:reservation_date>', views.pitch_reservations, name='pitchReservations'),
-
-
+    path('submitRate/', views.submit_rate, name="submitRate")
 ]

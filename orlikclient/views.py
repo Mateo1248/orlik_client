@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 
-from .models import RegisterData, Reservation, LoginData, PitchReservation
+from .models import RegisterData, Reservation, LoginData, PitchReservation, Rating
 from .models import RegisterData, Reservation, Pitch
 import requests
 import json
@@ -17,6 +17,7 @@ DELETE_USER_ENDPOINT = BASE_ENDPOINT + '/users/'
 CHANGE_PASSWORD_ENDPOINT = BASE_ENDPOINT + '/users/'
 PITCHES_ENDPOINT = BASE_ENDPOINT + '/pitches'
 CANCEL_RESERVATION_ENDPOINT = BASE_ENDPOINT + '/reservations/'
+RATING_ENDPOINT = BASE_ENDPOINT + "/ratings"
 
 token = ''
 user = ''
@@ -136,7 +137,7 @@ def show_map(request, find_by_name=False):
         return render(request, 'systemFailure.html')
 
 
-def list_user_reservations(request):
+def list_user_reservations(request, error_occurred=False):
     global token
     global user
 
@@ -191,7 +192,8 @@ def list_user_reservations(request):
         else:
             print("Error occurred while listing user reservations", response.status_code)
         context = {
-            'user_reservations': reservation_list
+            'user_reservations': reservation_list,
+            'error_occurred': error_occurred
         }
         return render(request, 'listUserReservations.html', context)
 
@@ -220,13 +222,15 @@ def make_reservation(request):
 
     print("Sending request for make reservation")
     response = requests.post(RESERVATIONS_ENDPOINT, headers=headers, data=json.dumps(request_body))
+    error_occurred = False
 
     if 300 > response.status_code >= 200:
         print("Reservation successfully created", response.status_code)
     else:
+        error_occurred = True
         print("Error while making reservation", response.status_code)
 
-    return list_user_reservations(request)
+    return list_user_reservations(request, error_occurred)
 
 
 def cancel_reservation(request):
@@ -368,33 +372,37 @@ def confirm_reservation(request):
 
 
 def pitches_list(request):
-    global token
-    global user
+    pitches = []
+    current_date = str(date.today())
 
-    if token != '' and user != '':
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
+    }
+    response = requests.get(PITCHES_ENDPOINT, headers=headers)
 
-        pitches = []
-        current_date = str(date.today())
-        context = {
-            'pitches': pitches,
-            'currDate': current_date,
-            'pitches_n': [el['name'] for el in pitches]
-        }
+    print(response.status_code)
+    result = response.json()
+    for pitch in result:
+        rating = Rating(
+            pitch_id=pitch['pitchId'],
+            pitch_name=pitch['pitchName'],
+            rating=0.0
+        )
+        print("Getting pitch", rating.pitch_name, " ", str(rating.pitch_id), "rating...")
+        rating_response = requests.get(RATING_ENDPOINT + "?pitchId=" + str(rating.pitch_id), headers=headers)
 
-        headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(token)}
-        response = requests.get(PITCHES_ENDPOINT, headers=headers)
-        print(response.status_code)
-        result = response.json()
-
-        for pitch in result:
-            pitches.append(
-                (pitch['pitchId'], pitch['pitchName'], pitch['ratings'])
-            )
-
-        return render(request, 'pitchesList.html', context)
-
-    else:
-        return render(request, 'systemFailure.html')
+        if rating_response.status_code == 200:
+            print("Successfully obtained pitch average rating")
+            rating.rating = round(rating_response.json()['averageRating'], 2)
+        else:
+            print("Error while getting pitch average rating")
+        pitches.append(rating)
+    context = {
+        'pitches': pitches,
+        'currDate': current_date,
+    }
+    return render(request, 'pitchesList.html', context)
 
 
 def pitch_reservations(request, pitch_id, reservation_date):
@@ -434,3 +442,26 @@ def pitch_reservations(request, pitch_id, reservation_date):
 def find_pitch(request):    
     return show_map(request, find_by_name=True)
 
+def submit_rate(request):
+    pitch_id = request.POST['rated_pitch_id']
+    rate = request.POST['inlineRadioOptions']
+    print(pitch_id, rate)
+
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': token
+    }
+
+    request_body = {
+        "pitchId": pitch_id,
+        "userId": user,
+        "value": rate
+    }
+    response = requests.post(RATING_ENDPOINT, data=json.dumps(request_body), headers=headers)
+
+    if 200 <= response.status_code < 300:
+        print("Successfully submitted rate")
+    else:
+        print("Error while submitting rate")
+
+    return pitches_list(request)

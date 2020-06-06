@@ -153,30 +153,38 @@
         <form action="/makeReservation/" method="post">
             {% csrf_token %}
             <div class="modal-content">
-            <div class="modal-header">
-                <p id="pheader"></p>
+                <div class="modal-header">
+                    <p id="pheader"></p>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <p id="perror" style="color: red">
+
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" readonly="readonly" class="form-control" name="pitch_id" id="pitch_id"
+                               value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" class="form-control" name="date" id="date" placeholder="Date"
+                               max="2020-12-31">
+                    </div>
+                    <div class="form-group">
+                        <label for="start-hour">Start hour</label>
+                        <input type="time" class="form-control" name="start-hour" id="start-hour"
+                               placeholder="Start hour">
+                    </div>
+                    <div class="form-group">
+                        <label for="end-hour">End hour</label>
+                        <input type="time" class="form-control" name="end-hour" id="end-hour" placeholder="End hour">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-light" onclick="return checkErrors()">Book</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <input type="text" readonly="readonly" class="form-control" name="pitch_id" id="pitch_id" value="">
-                </div>
-                <div class="form-group">
-                    <label for="date">Date</label>
-                    <input type="date" class="form-control" name="date" id="date" placeholder="Date" max="2020-12-31">
-                </div>
-                <div class="form-group">
-                    <label for="start-hour">Start hour</label>
-                    <input type="time" class="form-control" name="start-hour" id="start-hour" placeholder="Start hour">
-                </div>
-                <div class="form-group">
-                    <label for="end-hour">End hour</label>
-                    <input type="time" class="form-control" name="end-hour" id="end-hour" placeholder="End hour">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-outline-light">Book</button>
-            </div>
-        </div>
         </form>
     </div>
 
@@ -190,24 +198,31 @@
         var date = document.getElementById("date");
         var startHour = document.getElementById("start-hour");
         var endHour = document.getElementById("end-hour");
-        var pitchId = document.getElementById("pitch_id")
+        var pitchId = document.getElementById("pitch_id");
+
+        pitchId.style.display = "none";
 
 
         var map = L.map('mapid').setView([51.1079, 17.0385], 12);   
         var pitchArray = [];
 
-        {#function bookPitch() {#}
-        {#    var d = new Date();#}
-        {#    var today = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2, '0')+'-'+String(d.getDate()).padStart(2, '0');#}
-        {#    if(date.value > date.max || date.value < today){#}
-        {#        alert("Wrong data!");#}
-        {#    }#}
-        {#    if(startHour.value > endHour.value){#}
-        {#        alert("You'll finish before you start");#}
-        {#    }#}
-        {#    // jeśli poszła rezerwacja to : modal.style.display = "none";#}
-        {#    mapelement.style.zIndex = 0;#}
-        {# } #}
+
+        function checkErrors() {
+            var d = new Date();
+            var today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            if (date.value > date.max || date.value < today) {
+                console.log("2")
+                document.getElementById("perror").innerHTML = " Wystąpił błąd podczas tworzenia takiej rezerwacji."
+                return false;
+            }
+            if (startHour.value > endHour.value) {
+                console.log("1");
+                document.getElementById("perror").innerHTML = " Wystąpił błąd podczas tworzenia takiej rezerwacji."
+                return false;
+            }
+
+            mapelement.style.zIndex = 0
+        }
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -246,6 +261,7 @@
         window.onclick = function (event) {
             if (event.target === modal) {
                 modal.style.display = "none";
+                document.getElementById("perror").innerHTML = ""
                 mapelement.style.zIndex = 0;
             }
         }

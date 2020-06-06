@@ -2,28 +2,128 @@
 {% load static %}
 {% block content %}
     <link rel="stylesheet" href="{% static '/css/pitchesList.css' %}">
-    <article class="p-3">
-        <div class="card">
-            <h3 class="card-header font-weight-bold">
-                Pitches
-            </h3>
-            <div class="card-body">
-                {% for pitch in pitches %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div class="container card p-3">
+        <h2 class="font-weight-bold">Pitches</h2>
+        <div class="list-group">
+            {% for pitch in pitches %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text font-weight-bold">
+                            {{ pitch.pitch_name }}
+                        </div>
+                        <div id="{{ pitch.pitch_id }}" class="h1 card-text rating float-right font-weight-bold"
+                             onclick="rateModal({{ pitch.pitch_id }})">
+                            {{ pitch.rating }}
+                        </div>
+                        <div class="card-text">
+                            <a href="{% url 'pitchReservations' pitch.pitch_id currDate %}" id="{{ pitch.pitch_name }}"
+                               onload="colorRating()"
+                               onclick="passPitchData(this.id, {{ pitch.pitch_id }})">
+                                <button class="btn btn-info">Schedule</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <script>
 
-                    <a href="{% url 'pitchReservations' pitch.0 currDate %}" id="{{ pitch.1 }}"
-                       class="list-group-item list-group-item-action"
-                       onclick="passPitchData(this.id, {{ pitch.0 }})">{{ pitch.1 }}</a>
-
-                    <script>
-                        function passPitchData(name, id) {
-                            localStorage.setItem("pitchName", name);
-                            localStorage.setItem("pitchId", id);
+                    function getRatingClass(rating) {
+                        if (rating < 3) {
+                            return "text-danger";
+                        } else if (rating < 4) {
+                            return "text-warning";
+                        } else {
+                            return "text-success";
                         }
-                    </script>
-                {% endfor %}
-            </div>
+                    }
+
+                    function colorRating() {
+                        $(".rating").each(function () {
+                                const ratingValue = parseFloat($(this).text());
+                                const classToAdd = getRatingClass(ratingValue);
+                                $(this).addClass(classToAdd);
+                            }
+                        );
+                    }
+
+                    window.onload = colorRating;
+
+                    function passPitchData(name, id) {
+                        localStorage.setItem("pitchName", name);
+                        localStorage.setItem("pitchId", id);
+                    }
+
+                    function setRateValue(value) {
+                        localStorage.setItem("rateValue", value);
+                    }
+
+                    function rateModal(whichPitch) {
+                        $("#myModal").modal();
+                        document.getElementById("modal_heading").textContent = `Rate pitch: `;
+                        $("#rated_pitch_id").val(whichPitch)
+                        localStorage.setItem("ratePitchId", whichPitch);
+                    }
+
+                    function submitRate() {
+                        let rate_pitch_Id = localStorage.getItem("ratePitchId");
+                        let rate_value = localStorage.getItem("rateValue");
+                        window.location.href = `/pitchesList/${rate_pitch_Id}/${rate_value}`
+                    }
+                </script>
+
+                <div class="modal" id="myModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 id="modal_heading" class="modal-title">Modal Heading</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <form action="/submitRate/" method="post">
+                                {% csrf_token %}
+                                <input type="text" id="rated_pitch_id" name="rated_pitch_id" hidden value="">
+                                <div class="modal-body">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio1"
+                                               value="1" onclick="setRateValue(1)">
+                                        <label class="form-check-label" for="inlineRadio1">1</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio2"
+                                               value="2" onclick="setRateValue(2)">
+                                        <label class="form-check-label" for="inlineRadio2">2</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio3"
+                                               value="3" onclick="setRateValue(3)">
+                                        <label class="form-check-label" for="inlineRadio3">3</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio3"
+                                               value="4" onclick="setRateValue(4)">
+                                        <label class="form-check-label" for="inlineRadio4">4</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="inlineRadioOptions"
+                                               id="inlineRadio3"
+                                               value="5" onclick="setRateValue(5)">
+                                        <label class="form-check-label" for="inlineRadio5">5</label>
+                                    </div>
+                                </div>
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-info" onclick="submitRate()">Rate!
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    </article>
-
-
+    </div>
 {% endblock content %}
